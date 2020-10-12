@@ -7,12 +7,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass=ParticipantRepository::class)
- * @UniqueEntity("pseudo", message="Ce pseudo est déjà utilisé !")
+ * @UniqueEntity("mail", message="Ce mail est déjà utilisé !")
  */
-class Participant
+class Participant implements UserInterface
 {
     /**
      * @ORM\Id
@@ -203,4 +204,29 @@ class Participant
 
         return $this;
     }
+
+    public function getUsername()
+    {
+        return $this->getMail();
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->motPasse;
+    }
+
+    public function getRoles()
+    {
+        if ($this->getAdministrateur())
+        {
+            return ['ROLE_ADMIN','ROLE_USER'];
+        }
+        else {
+            return ['ROLE_USER'];
+        }
+    }
+
+    // Gérés par Symfony
+    public function getSalt() { return null; }
+    public function eraseCredentials() {}
 }
