@@ -32,7 +32,7 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
 //            $participant->setTelephone($faker->serviceNumber );
 // Champ commenté car faker génère des numéros trop longs (espaces entre paires de chiffres)
 
-            $participant->setMail('email@20CharsMax.com');
+            $participant->setMail('mail'.$i.'@20CharsMax.com');
 //            $participant->setMail($faker->email);
 // Champ commenté car faker génère des mails plus long que les 20 chars définis sur l'entity.
 // (ils prévoyaient peut-être que toutes les adresses soient en @campus-eni.fr et de ne pas stocker cette partie ? Ou bien ? ;))
