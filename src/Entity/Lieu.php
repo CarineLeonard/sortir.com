@@ -15,12 +15,12 @@ class Lieu
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private $idLieu;
 
     /**
      * @ORM\Column(type="string", length=30)
      */
-    private $nom_lieu;
+    private $nom;
 
     /**
      * @ORM\Column(type="string", length=30, nullable=true)
@@ -37,25 +37,26 @@ class Lieu
      */
     private $longitude;
 
+    // attention avoir le nom des champs dans join column !
     /**
      * @ORM\ManyToOne(targetEntity=Ville::class)
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=false, name="id_ville", referencedColumnName="id_ville")
      */
-    private $villes_no_ville;
+    private $ville;
 
-    public function getId(): ?int
+    public function getIdLieu(): ?int
     {
-        return $this->id;
+        return $this->idLieu;
     }
 
     public function getNomLieu(): ?string
     {
-        return $this->nom_lieu;
+        return $this->nom;
     }
 
-    public function setNomLieu(string $nom_lieu): self
+    public function setNomLieu(string $nom): self
     {
-        $this->nom_lieu = $nom_lieu;
+        $this->nom = $nom;
 
         return $this;
     }
@@ -96,14 +97,14 @@ class Lieu
         return $this;
     }
 
-    public function getVillesNoVille(): ?Ville
+    public function getVille(): ?Ville
     {
-        return $this->villes_no_ville;
+        return $this->sorties;
     }
 
-    public function setVillesNoVille(?Ville $villes_no_ville): self
+    public function setVille(?Ville $ville): self
     {
-        $this->villes_no_ville = $villes_no_ville;
+        $this->ville = $ville;
 
         return $this;
     }

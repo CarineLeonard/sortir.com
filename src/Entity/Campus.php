@@ -15,26 +15,26 @@ class Campus
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private $idCampus;
 
     /**
      * @ORM\Column(type="string", length=30)
      */
-    private $nom_campus;
+    private $nom;
 
-    public function getId(): ?int
+    public function getIdCampus(): ?int
     {
-        return $this->id;
+        return $this->idCampus;
     }
 
-    public function getNomCampus(): ?string
+    public function getNom(): ?string
     {
-        return $this->nom_campus;
+        return $this->nom;
     }
 
-    public function setNomCampus(string $nom_campus): self
+    public function setNom(string $nom): self
     {
-        $this->nom_campus = $nom_campus;
+        $this->nom = $nom;
 
         return $this;
     }

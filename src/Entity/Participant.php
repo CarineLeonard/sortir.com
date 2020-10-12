@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ParticipantRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -17,12 +19,7 @@ class Participant
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
-
-    /**
-     * @ORM\Column(type="string", length=30, name="pseudo", unique=true)
-     */
-    private $username;
+    private $idParticipant;
 
     /**
      * @ORM\Column(type="string", length=30)
@@ -45,9 +42,9 @@ class Participant
     private $mail;
 
     /**
-     * @ORM\Column(type="string", length=255, name="mot_de_passe")
+     * @ORM\Column(type="string", length=255)
      */
-    private $password;
+    private $motPasse;
 
     /**
      * @ORM\Column(type="boolean")
@@ -61,25 +58,26 @@ class Participant
 
     /**
      * @ORM\ManyToOne(targetEntity=Campus::class)
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=false, name="id_campus", referencedColumnName="id_campus")
      */
-    private $campus_no_campus;
+    private $campus;
 
-    public function getId(): ?int
+    /**
+     * @ORM\ManyToMany(targetEntity=Sortie::class)
+     * 	@ORM\JoinTable(name = "participant_sortie",
+     *      joinColumns = { @ORM\JoinColumn(name = "id_participant", referencedColumnName="id_participant") },
+     *      inverseJoinColumns = { @ORM\JoinColumn(name = "id_sortie", referencedColumnName="id_sortie") })
+     */
+    private $sorties;
+
+    public function __construct()
     {
-        return $this->id;
+        $this->sorties = new ArrayCollection();
     }
 
-    public function getUsername(): ?string
+    public function getIdParticipant(): ?int
     {
-        return $this->username;
-    }
-
-    public function setUsername(string $username): self
-    {
-        $this->username = $username;
-
-        return $this;
+        return $this->idParticipant;
     }
 
     public function getNom(): ?string
@@ -130,14 +128,14 @@ class Participant
         return $this;
     }
 
-    public function getPassword(): ?string
+    public function getMotPasse(): ?string
     {
-        return $this->password;
+        return $this->motPasse;
     }
 
-    public function setPassword(string $password): self
+    public function setMotPasse(string $motPasse): self
     {
-        $this->password = $password;
+        $this->motPasse = $motPasse;
 
         return $this;
     }
@@ -166,14 +164,42 @@ class Participant
         return $this;
     }
 
-    public function getCampusNoCampus(): ?Campus
+    public function getCampus(): ?Campus
     {
-        return $this->campus_no_campus;
+        return $this->campus;
     }
 
-    public function setCampusNoCampus(?Campus $campus_no_campus): self
+    public function setCampus(?Campus $campus): self
     {
-        $this->campus_no_campus = $campus_no_campus;
+        $this->campus= $campus;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Sortie[]
+     */
+    public function getSorties(): Collection
+    {
+        return $this->sorties;
+    }
+
+    public function addSorties(Sortie $sortie): self
+    {
+        if (!$this->sorties->contains($sortie)) {
+            $this->sorties[] = $sortie;
+            $sortie->addParticipants($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSorties(Sortie $sortie): self
+    {
+        if ($this->sorties->contains($sortie)) {
+            $this->sorties->removeElement($sortie);
+            $sortie->removeParticipants($this);
+        }
 
         return $this;
     }

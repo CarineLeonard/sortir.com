@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\SortieRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -15,7 +17,7 @@ class Sortie
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private $idSortie;
 
     /**
      * @ORM\Column(type="string", length=30)
@@ -25,7 +27,7 @@ class Sortie
     /**
      * @ORM\Column(type="datetime")
      */
-    private $datedebut;
+    private $dateHeureDebut;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
@@ -35,39 +37,58 @@ class Sortie
     /**
      * @ORM\Column(type="datetime")
      */
-    private $datecloture;
+    private $dateLimiteInscription;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $nbinscriptionsmax;
+    private $nbInscriptionsMax;
 
     /**
      * @ORM\Column(type="string", length=500, nullable=true)
      */
-    private $descriptioninfos;
+    private $infosSortie;
 
     /**
      * @ORM\ManyToOne(targetEntity=Participant::class)
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=false, name="id_participant", referencedColumnName="id_participant")
      */
     private $organisateur;
 
     /**
      * @ORM\ManyToOne(targetEntity=Lieu::class)
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=false, name="id_lieu", referencedColumnName="id_lieu")
      */
-    private $lieu_no_lieu;
+    private $lieu;
 
     /**
      * @ORM\ManyToOne(targetEntity=Etat::class)
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=false, name="id_etat", referencedColumnName="id_etat")
      */
-    private $etat_no_etat;
+    private $etat;
 
-    public function getId(): ?int
+    /**
+     * @ORM\ManyToOne(targetEntity=Campus::class)
+     * @ORM\JoinColumn(nullable=false, name="id_campus", referencedColumnName="id_campus")
+     */
+    private $siteOrganisateur;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Participant::class)
+     * @ORM\JoinTable(name = "sortie_participant",
+     *      joinColumns = { @ORM\JoinColumn(name="id_sortie", referencedColumnName="id_sortie") },
+     *      inverseJoinColumns = { @ORM\JoinColumn(name = "id_participant", referencedColumnName="id_participant") })
+     */
+    private $participants;
+
+    public function __construct()
     {
-        return $this->id;
+        $this->participants = new ArrayCollection();
+    }
+
+    public function getIdSortie(): ?int
+    {
+        return $this->idSortie;
     }
 
     public function getNom(): ?string
@@ -82,14 +103,14 @@ class Sortie
         return $this;
     }
 
-    public function getDatedebut(): ?\DateTimeInterface
+    public function getDateHeureDebut(): ?\DateTimeInterface
     {
-        return $this->datedebut;
+        return $this->dateHeureDebut;
     }
 
-    public function setDatedebut(\DateTimeInterface $datedebut): self
+    public function setDateHeureDebut(\DateTimeInterface $dateHeureDebut): self
     {
-        $this->datedebut = $datedebut;
+        $this->dateHeureDebut = $dateHeureDebut;
 
         return $this;
     }
@@ -106,62 +127,50 @@ class Sortie
         return $this;
     }
 
-    public function getDatecloture(): ?\DateTimeInterface
+    public function getDateLimiteInscription(): ?\DateTimeInterface
     {
-        return $this->datecloture;
+        return $this->dateLimiteInscription;
     }
 
-    public function setDatecloture(\DateTimeInterface $datecloture): self
+    public function setDateLimiteInscription(\DateTimeInterface $dateLimiteInscription): self
     {
-        $this->datecloture = $datecloture;
+        $this->dateLimiteInscription = $dateLimiteInscription;
 
         return $this;
     }
 
-    public function getNbinscriptionsmax(): ?int
+    public function getNbinscriptionsMax(): ?int
     {
-        return $this->nbinscriptionsmax;
+        return $this->nbInscriptionsMax;
     }
 
-    public function setNbinscriptionsmax(int $nbinscriptionsmax): self
+    public function setNbinscriptionsMax(int $nbInscriptionsMax): self
     {
-        $this->nbinscriptionsmax = $nbinscriptionsmax;
+        $this->nbInscriptionsMax = $nbInscriptionsMax;
 
         return $this;
     }
 
-    public function getDescriptioninfos(): ?string
+    public function getInfosSortie(): ?string
     {
-        return $this->descriptioninfos;
+        return $this->infosSortie;
     }
 
-    public function setDescriptioninfos(?string $descriptioninfos): self
+    public function setInfosSortie(?string $infosSortie): self
     {
-        $this->descriptioninfos = $descriptioninfos;
+        $this->infosSortie = $infosSortie;
 
         return $this;
     }
 
-    public function getEtatsortie(): ?int
+    public function getEtat(): ?int
     {
-        return $this->etatsortie;
+        return $this->etat;
     }
 
-    public function setEtatsortie(int $etatsortie): self
+    public function setEtat(int $etat): self
     {
-        $this->etatsortie = $etatsortie;
-
-        return $this;
-    }
-
-    public function getUrlPhoto(): ?string
-    {
-        return $this->urlPhoto;
-    }
-
-    public function setUrlPhoto(?string $urlPhoto): self
-    {
-        $this->urlPhoto = $urlPhoto;
+        $this->etat = $etat;
 
         return $this;
     }
@@ -178,27 +187,58 @@ class Sortie
         return $this;
     }
 
-    public function getLieuNoLieu(): ?Lieu
+    public function getLieu(): ?Lieu
     {
-        return $this->lieu_no_lieu;
+        return $this->lieu;
     }
 
-    public function setLieuNoLieu(?Lieu $lieu_no_lieu): self
+    public function setLieu(?Lieu $lieu): self
     {
-        $this->lieu_no_lieu = $lieu_no_lieu;
+        $this->lieu = $lieu;
 
         return $this;
     }
 
-    public function getEtatNoEtat(): ?Etat
+    public function getSiteOrganisateur(): ?Campus
     {
-        return $this->etat_no_etat;
+        return $this->siteOrganisateur;
     }
 
-    public function setEtatNoEtat(?Etat $etat_no_etat): self
+    public function setSiteOrganisateur(?Campus $siteOrganisateur): self
     {
-        $this->etat_no_etat = $etat_no_etat;
+        $this->siteOrganisateur = $siteOrganisateur;
 
         return $this;
     }
+
+    /**
+     * @return Collection|Participant[]
+     */
+    public function getParticipants(): Collection
+    {
+        return $this->participants;
+    }
+
+    public function addParticipants(Participant $participant): self
+    {
+        if (!$this->participants->contains($participant)) {
+            $this->participants[] = $participant;
+            $participant->addSorties($this);
+        }
+
+        return $this;
+    }
+
+    public function removeParticipants(Participant $participant): self
+    {
+        if ($this->participants->contains($participant)) {
+            $this->participants->removeElement($participant);
+            $participant->removeSorties($this);
+        }
+
+        return $this;
+    }
+
+    
+
 }

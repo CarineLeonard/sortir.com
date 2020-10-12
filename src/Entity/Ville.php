@@ -15,43 +15,43 @@ class Ville
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private $idVille;
 
     /**
      * @ORM\Column(type="string", length=30)
      */
-    private $nom_ville;
+    private $nom;
 
     /**
      * @ORM\Column(type="string", length=10)
      */
-    private $code_postal;
+    private $codePostal;
 
-    public function getId(): ?int
+    public function getIdVille(): ?int
     {
-        return $this->id;
+        return $this->idVille;
     }
 
     public function getNom(): ?string
     {
-        return $this->nom_ville;
+        return $this->nom;
     }
 
-    public function setNom(string $nom_ville): self
+    public function setNom(string $nom): self
     {
-        $this->nom_ville = $nom_ville;
+        $this->nom = $nom;
 
         return $this;
     }
 
     public function getCodePostal(): ?string
     {
-        return $this->code_postal;
+        return $this->codePostal;
     }
 
-    public function setCodePostal(string $code_postal): self
+    public function setCodePostal(string $codePostal): self
     {
-        $this->code_postal = $code_postal;
+        $this->codePostal = $codePostal;
 
         return $this;
     }

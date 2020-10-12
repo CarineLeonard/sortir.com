@@ -15,16 +15,16 @@ class Etat
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private $idEtat;
 
     /**
      * @ORM\Column(type="string", length=30)
      */
     private $libelle;
 
-    public function getId(): ?int
+    public function getIdEtat(): ?int
     {
-        return $this->id;
+        return $this->idEtat;
     }
 
     public function getLibelle(): ?string
