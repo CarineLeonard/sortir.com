@@ -24,7 +24,7 @@ class AppFixtures extends Fixture
             $participant->setPassword($faker->email);
             $participant->setAdministrateur($faker->boolean );
             $participant->setActif($faker->boolean );
-            $participant->setCampusNoCampus($faker->number);
+            $participant->setCampus($faker->number);
 
             $participant->persist($participant);
         }
