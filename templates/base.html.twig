@@ -2,11 +2,19 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
+        <title>{% block title %}Sortir{% endblock %}</title>
+        {% block stylesheets %}
+            <link rel="stylesheet" href="{{ asset ("css/bootstrap.css") }}">
+            <link rel="stylesheet" href="{{ asset ("css/style.css") }}">
+        {% endblock %}
     </head>
-    <body>
-        {% block body %}{% endblock %}
+    <body class="container-fluid">
+        {% include 'header.html.twig' %}
+        <main class="text-center">
+            <h1>{% block titre %}{% endblock %}</h1>
+            {% block body %}{% endblock %}
+        </main>
+        {% include 'footer.html.twig' %}
         {% block javascripts %}{% endblock %}
     </body>
 </html>
