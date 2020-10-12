@@ -4,9 +4,11 @@ namespace App\Entity;
 
 use App\Repository\ParticipantRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=ParticipantRepository::class)
+ * @UniqueEntity("pseudo", message="Ce pseudo est déjà utilisé !")
  */
 class Participant
 {
@@ -18,7 +20,7 @@ class Participant
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=30, name="pseudo")
+     * @ORM\Column(type="string", length=30, name="pseudo", unique=true)
      */
     private $username;
 
