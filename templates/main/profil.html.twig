@@ -4,5 +4,21 @@
 {% block titre %}Mon Profil{% endblock %}
 
 {% block body %}
+    {{ form_start(participantForm) }}
+<div class="form-inline">
+    <div class="justify-content-center">
+        <div class="form-group row justify-content-center">{{ form_row(participantForm.pseudo) }}</div>
+        <div class="form-group row justify-content-center"> {{ form_row(participantForm.prenom) }}</div>
+        <div class="form-group row justify-content-center">{{ form_row(participantForm.nom) }}</div>
+        <div class="form-group row justify-content-center">{{ form_row(participantForm.telephone) }}</div>
+        <div class="form-group row justify-content-center">{{ form_row(participantForm.mail) }}</div>
+        <div class="form-group row justify-content-center">{{ form_row(participantForm.motPasse) }}</div>
+        <div class="form-group row justify-content-center">{{ form_row(participantForm.campus) }}</div>
+        <button type="submit" class="btn btn-primary">Update!</button>
+    </div>
 
+
+    {{ form_end(participantForm) }}
+
+</div>
 {% endblock %}
