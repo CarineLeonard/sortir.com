@@ -27,7 +27,7 @@
                         {{ form_widget(sortieForm.lieu) }}
                     </div>
                     <div class="col-2">
-                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#lieuModal">+</button>
+                        <button type="button" class="btn btn-primary m-0" data-toggle="modal" data-target="#lieuModal">+</button>
                     </div>
                 </div>
             </div>
@@ -71,6 +71,8 @@
         let $ville = $('#sortie_ville');
         // When ville gets selected ...
         $ville.change(function() {
+            // ... preset the same field in nouveauLieu and ...
+            $('#sortie_nouveauLieu_ville').val($ville.val());
             // ... retrieve the corresponding form.
             let $form = $(this).closest('form');
             // Simulate form data, but only include the selected ville value.
