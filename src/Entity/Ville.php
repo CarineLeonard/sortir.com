@@ -83,4 +83,9 @@ class Ville
     {
         $this->lieux = $lieux;
     }
+
+    public function __toString()
+    {
+        return $this->nom.' ('.str_replace(' ', '', $this->codePostal).')';
+    }
 }
