@@ -39,7 +39,7 @@ class Lieu
 
     // attention avoir le nom des champs dans join column !
     /**
-     * @ORM\ManyToOne(targetEntity=Ville::class)
+     * @ORM\ManyToOne(targetEntity=Ville::class, inversedBy="lieux")
      * @ORM\JoinColumn(nullable=false, name="id_ville", referencedColumnName="id_ville")
      */
     private $ville;
@@ -99,7 +99,7 @@ class Lieu
 
     public function getVille(): ?Ville
     {
-        return $this->sorties;
+        return $this->ville;
     }
 
     public function setVille(?Ville $ville): self

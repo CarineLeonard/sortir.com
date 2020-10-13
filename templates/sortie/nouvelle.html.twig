@@ -1,0 +1,95 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sortir.com{% endblock %}
+{% block titre %}Créer une sortie{% endblock %}
+
+{% block body %}
+    {{ form_start(sortieForm) }}
+    <div class="row">
+        <div class="col-6">
+            {{ form_row(sortieForm.nom) }}
+            {{ form_row(sortieForm.dateHeureDebut) }}
+            {{ form_row(sortieForm.dateLimiteInscription) }}
+            {{ form_row(sortieForm.nbInscriptionsMax) }}
+            {{ form_row(sortieForm.duree) }}
+            {{ form_row(sortieForm.infosSortie) }}
+        </div>
+        <div class="col-6">
+            <div class="form-group">
+                <label for="campus_div">Site organisateur</label>
+                <div id="campus_div" class="form-control-plaintext">{{ app.user.campus.nom }}</div>
+            </div>
+            {{ form_row(sortieForm.ville) }}
+            <div class="form-group">
+                {{ form_label(sortieForm.lieu) }}
+                <div class="form-row">
+                    <div class="col-10">
+                        {{ form_widget(sortieForm.lieu) }}
+                    </div>
+                    <div class="col-2">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#lieuModal">+</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{#    <div class="col alert alert-danger">#}
+{#        {{ form_errors(sortieForm) }}#}
+{#    </div>#}
+    <div class="col">
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+        <button type="submit" class="btn btn-primary">Publier la sortie</button>
+        <button type="submit" class="btn btn-primary">Annuler</button>
+    </div>
+
+    <div class="modal fade" id="lieuModal" tabindex="-1" aria-labelledby="lieuModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="lieuModalLabel">Nouveau lieu</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {{ form_row(sortieForm.nouveauLieu) }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary">Sauvegarder</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{ form_end(sortieForm) }}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let $ville = $('sortie_ville');
+            // When sport gets selected ...
+            $ville.change(function() {
+                // ... retrieve the corresponding form.
+                let $form = $(this).closest('form');
+                // Simulate form data, but only include the selected sport value.
+                let data = {};
+                data[$ville.attr('name')] = $ville.val();
+                // Submit data via AJAX to the form's action path.
+                $.ajax({
+                    url : $form.attr('action'),
+                    type: $form.attr('method'),
+                    data : data,
+                    success: function(html) {
+                        // Replace current position field ...
+                        $('#sortie_lieu').replaceWith(
+                            // ... with the returned one from the AJAX response.
+                            $(html).find('#sortie_lieu')
+                        );
+                        // Position field now displays the appropriate positions.
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
