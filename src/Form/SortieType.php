@@ -38,6 +38,7 @@ class SortieType extends AbstractType
             ->add('nouveauLieu', LieuType::class, [
                 'mapped' => false,
                 'label' => false,
+                'required' => false,
             ]);
         ;
 
@@ -58,7 +59,7 @@ class SortieType extends AbstractType
         });
 
         $builder->get('ville')->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) use ($villeModifier) {
-            $ville = $event->getForm()->get('ville')->getData();
+            $ville = $event->getForm()->getData();
 
             $villeModifier($event->getForm()->getParent(), $ville);
         });

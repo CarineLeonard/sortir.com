@@ -31,12 +31,11 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
-{#    <div class="col alert alert-danger">#}
-{#        {{ form_errors(sortieForm) }}#}
-{#    </div>#}
+    <div class="col alert alert-danger">
+        {{ form_errors(sortieForm) }}
+    </div>
     <div class="col">
         <button type="submit" class="btn btn-primary">Enregistrer</button>
         <button type="submit" class="btn btn-primary">Publier la sortie</button>
@@ -69,28 +68,29 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-        let $ville = $('sortie_ville');
-        // When sport gets selected ...
+        let $ville = $('#sortie_ville');
+        // When ville gets selected ...
         $ville.change(function() {
             // ... retrieve the corresponding form.
             let $form = $(this).closest('form');
-            // Simulate form data, but only include the selected sport value.
+            // Simulate form data, but only include the selected ville value.
             let data = {};
             data[$ville.attr('name')] = $ville.val();
+            // Also adding datetime fields cause they cause an error
+            data[$('#sortie_dateHeureDebut').attr('name')] = $('#sortie_dateHeureDebut').val();
+            data[$('#sortie_dateLimiteInscription').attr('name')] = $('#sortie_dateLimiteInscription').val();
             // Submit data via AJAX to the form's action path.
-            console.log(data)
             $.ajax({
                 url : $form.attr('action'),
                 type: $form.attr('method'),
                 data : data,
                 success: function(html) {
-                    console.log('hey !')
                     // Replace current position field ...
                     $('#sortie_lieu').replaceWith(
                         // ... with the returned one from the AJAX response.
                         $(html).find('#sortie_lieu')
                     );
-                    // Position field now displays the appropriate positions.
+                    // Position field now displays the appropriate lieux.
                 }
             });
         });

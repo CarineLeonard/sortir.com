@@ -44,17 +44,17 @@ class Lieu
      */
     private $ville;
 
-    public function getIdLieu(): ?int
+    public function getId(): ?int
     {
         return $this->idLieu;
     }
 
-    public function getNomLieu(): ?string
+    public function getNom(): ?string
     {
         return $this->nom;
     }
 
-    public function setNomLieu(string $nom): self
+    public function setNom(string $nom): self
     {
         $this->nom = $nom;
 
@@ -107,5 +107,10 @@ class Lieu
         $this->ville = $ville;
 
         return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->nom;
     }
 }
