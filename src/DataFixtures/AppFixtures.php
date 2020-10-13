@@ -88,6 +88,8 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
         $etatRepository = $manager->getRepository(Etat::class);
         $nosEtat = $etatRepository->findAll();
 
+
+
         // 20 sorties
         for ($i = 0; $i < 20; $i++)
         {
@@ -105,6 +107,13 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
             $sortie->setSiteOrganisateur( $nosCampus[random_int(1, count($nosCampus)-1)]);
             $sortie->setLieu( $nosLieu[random_int(1, count($nosLieu)-1)]);
             $sortie->setOrganisateur( $nosParticipant[random_int(1, count($nosParticipant)-1)]);
+            $i=0;
+            do {
+                $sortie->addParticipants($nosParticipant[random_int(1, count($nosParticipant)-1)]);
+                $i++;
+                $sortieRepository = $manager->getRepository(Sortie::class);
+                $nosSortie = $sortieRepository->findAll();
+            } while ($i <= $faker->numberBetween($min = 1, $max = 20) || count($nosSortie) <= $sortie->getNbinscriptionsMax()) ;
 
             $manager->persist($sortie);
         }
