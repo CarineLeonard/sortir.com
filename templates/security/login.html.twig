@@ -1,10 +1,10 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Login{% endblock %}
-{% block titre %}Login {% endblock %}
+{% block titre %} {% endblock %}
 
 {% block body %}
-<form method="post">
+<form method="post" class="centre">
     {% if error %}
         <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
     {% endif %}
@@ -15,26 +15,28 @@
         </div>
     {% endif %}
 
-    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-    <label for="inputMail">Mail</label>
-    <input type="text" value="{{ last_username }}" name="mail" id="inputMail" class="form-control" required autofocus>
-    <label for="inputPassword">Password</label>
-    <input type="password" name="password" id="inputPassword" class="form-control" required>
-
+    <div class="form-group row justify-content-center">
+        <label for="inputMail" class="col-sm-1 col-form-label">Identifiant : </label>
+        <input type="text" value="{{ last_username }}" name="mail" id="inputMail" class="form-control col-sm-3" required autofocus>
+    </div>
+    <div class="form-group row justify-content-center">
+        <label for="inputPassword" class="col-sm-1 col-form-label">Mot de passe :</label>
+        <input type="password" name="password" id="inputPassword" class="form-control col-sm-3" required>
+    </div>
     <input type="hidden" name="_csrf_token"
-           value="{{ csrf_token('authenticate') }}"
-    >
+           value="{{ csrf_token('authenticate') }}" >
 
-        {# See https://symfony.com/doc/current/security/remember_me.html #}
-        <div class="checkbox mb-3">
+    <div class="form-group row justify-content-center">
+        <button class="btn btn-secondary col-sm-1 col-form-label" type="submit">
+            Connexion
+        </button>
+        <div class="checkbox mb-3 col-sm-2 col-form-label">
             <label>
-                <input type="checkbox" name="_remember_me"> Remember me
+                <input type="checkbox" name="_remember_me"> Se souvenir de moi
             </label>
+            <br>
+            <a href="" class="text-secondary">Mot de passe oublié</a>
         </div>
-
-
-    <button class="btn btn-lg btn-primary" type="submit">
-        Sign in
-    </button>
+    </div>
 </form>
 {% endblock %}
