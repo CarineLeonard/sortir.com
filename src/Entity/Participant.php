@@ -71,6 +71,11 @@ class Participant implements UserInterface
      */
     private $sorties;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true, unique=true)
+     */
+    private $apiToken;
+
     public function __construct()
     {
         $this->sorties = new ArrayCollection();
@@ -229,4 +234,16 @@ class Participant implements UserInterface
     // Gérés par Symfony
     public function getSalt() { return null; }
     public function eraseCredentials() {}
+
+    public function getApiToken(): ?string
+    {
+        return $this->apiToken;
+    }
+
+    public function setApiToken(?string $apiToken): self
+    {
+        $this->apiToken = $apiToken;
+
+        return $this;
+    }
 }
