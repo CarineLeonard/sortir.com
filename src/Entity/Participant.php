@@ -33,12 +33,12 @@ class Participant implements UserInterface
     private $prenom;
 
     /**
-     * @ORM\Column(type="string", length=15, nullable=true)
+     * @ORM\Column(type="string", length=20, nullable=true)
      */
     private $telephone;
 
     /**
-     * @ORM\Column(type="string", length=20, unique=true)
+     * @ORM\Column(type="string", length=50, unique=true)
      */
     private $mail;
 
@@ -72,9 +72,9 @@ class Participant implements UserInterface
     private $sorties;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true, unique=true)
+     * @ORM\Column(type="string", length=30)
      */
-    private $apiToken;
+    private $pseudo;
 
     public function __construct()
     {
@@ -235,14 +235,14 @@ class Participant implements UserInterface
     public function getSalt() { return null; }
     public function eraseCredentials() {}
 
-    public function getApiToken(): ?string
+    public function getPseudo(): ?string
     {
-        return $this->apiToken;
+        return $this->pseudo;
     }
 
-    public function setApiToken(?string $apiToken): self
+    public function setPseudo(string $pseudo): self
     {
-        $this->apiToken = $apiToken;
+        $this->pseudo = $pseudo;
 
         return $this;
     }

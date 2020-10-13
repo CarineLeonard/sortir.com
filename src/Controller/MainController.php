@@ -22,4 +22,21 @@ class MainController extends AbstractController
         }
 
     }
+
+    /**
+     * @Route("/profil", name="main_profil")
+     */
+    public function profil()
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        if ('ROLE_USER') {
+            return $this->render('main/profil.html.twig', [
+                'controller_name' => 'MainController',
+            ]);
+        } else {
+            return $this->render('security/login.html.twig');
+        }
+
+    }
+
 }
