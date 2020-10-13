@@ -26,8 +26,8 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
         // on créé 10 personnes : regarder les types !!
         for ($i = 0; $i < 10; $i++) {
             $participant = new Participant();
-            $participant->setNom($faker->name);
-            $participant->setPrenom($faker-> name);
+            $participant->setNom($faker->lastName);
+            $participant->setPrenom($faker-> firstName($gender = null|'male'|'female'));
 
 //            $participant->setTelephone($faker->serviceNumber );
 // Champ commenté car faker génère des numéros trop longs (espaces entre paires de chiffres)
