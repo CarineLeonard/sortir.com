@@ -108,17 +108,15 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
             $sortie->setLieu( $nosLieu[random_int(1, count($nosLieu)-1)]);
             $sortie->setOrganisateur( $nosParticipant[random_int(1, count($nosParticipant)-1)]);
             $i=0;
+            $j = $faker->numberBetween($min = 1, $max = 20) ;
             do {
-                $sortie->addParticipants($nosParticipant[random_int(1, count($nosParticipant)-1)]);
+                $sortie->addParticipants($participantRepository->find($nosParticipant[random_int(1, count($nosParticipant)-1)]));
                 $i++;
-                $sortieRepository = $manager->getRepository(Sortie::class);
-                $nosSortie = $sortieRepository->findAll();
-            } while ($i <= $faker->numberBetween($min = 1, $max = 20) || count($nosSortie) <= $sortie->getNbinscriptionsMax()) ;
+            } while ($i <= $j || $i <= $sortie->getNbinscriptionsMax()) ;
 
             $manager->persist($sortie);
         }
         $manager->flush();
-        // il manque les inscrits : lien participants / sorties !!
 
     }
 
