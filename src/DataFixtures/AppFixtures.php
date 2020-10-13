@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Campus;
 use App\Entity\Participant;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -19,35 +20,37 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
 
     public function load(ObjectManager $manager)
     {
-        // On configure dans quelles langues nous voulons nos données
+        // langue = FR
         $faker = \Faker\Factory::create('fr_FR');
 
+        //Campus
+        for ($i = 0; $i < 12; $i++)
+        {
+            $campus = new Campus();
+            $campus->setNom($faker->city);
+            $manager->persist($campus);
+            $userCampus = $campus;
+        }
+        $manager->flush();
+        $campusRepository = $manager->getRepository(Campus::class);
+        $nosCampus = $campusRepository->findAll();
 
-        // on créé 10 personnes : regarder les types !!
-        for ($i = 0; $i < 10; $i++) {
+        // 20 personnes
+        for ($i = 0; $i < 20; $i++)
+        {
             $participant = new Participant();
             $participant->setNom($faker->lastName);
-            $participant->setPrenom($faker-> firstName($gender = null|'male'|'female'));
-
-//            $participant->setTelephone($faker->serviceNumber );
-// Champ commenté car faker génère des numéros trop longs (espaces entre paires de chiffres)
-
-            $participant->setMail('mail'.$i.'@20CharsMax.com');
-//            $participant->setMail($faker->email);
-// Champ commenté car faker génère des mails plus long que les 20 chars définis sur l'entity.
-// (ils prévoyaient peut-être que toutes les adresses soient en @campus-eni.fr et de ne pas stocker cette partie ? Ou bien ? ;))
-
-            $participant->setMotPasse($this->encoder->encodePassword($participant,'passe'));
-            $participant->setAdministrateur($faker->boolean );
-            $participant->setActif($faker->boolean );
-
-// Pour le campus j'ai créé une référence dans BaseFixtures vers un campus déjà enregistré, on peut peut-être faire différemment ?
-// Lien vers la doc dans le commentaire suivant.
-            $participant->setCampus($this->getReference(BaseFixtures::CAMPUS_REFERENCE));
+            $participant->setPrenom($faker-> firstName);
+            $participant->setMail(($faker->userName).'@campus-eni.fr');
+            $participant->setPseudo($faker->userName);
+            $participant->setTelephone($faker->mobileNumber);
+            $participant->setMotPasse($this->encoder->encodePassword($participant,($faker->password)));
+            $participant->setAdministrateur($faker->boolean);
+            $participant->setActif($faker->boolean);
+            $participant->setCampus( $nosCampus[random_int(1, count($nosCampus))]);
 
             $manager->persist($participant);
         }
-
         $manager->flush();
     }
 
@@ -55,7 +58,7 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
     // Cela permet de disposer d'un campus (déjà créé dans BaseFixtures) grâce à addReference et getReference.
     // Il faut implémenter DependentFixtureInterface pour que ça fonctionne.
     // https://symfony.com/doc/current/bundles/DoctrineFixturesBundle/index.html#sharing-objects-between-fixtures
-    public function getDependencies()
+   public function getDependencies()
     {
         return array(
             BaseFixtures::class,

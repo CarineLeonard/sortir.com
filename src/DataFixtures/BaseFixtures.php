@@ -74,6 +74,7 @@ class BaseFixtures extends Fixture
         $participant->setAdministrateur(false);
         $participant->setActif(true);
         $participant->setCampus($userCampus);
+        $participant-> setPseudo('user');
         $manager->persist($participant);
 
         //admin
@@ -86,6 +87,7 @@ class BaseFixtures extends Fixture
         $participant->setAdministrateur(true);
         $participant->setActif(true);
         $participant->setCampus($userCampus);
+        $participant-> setPseudo('admin');
         $manager->persist($participant);
 
         $manager->flush();
