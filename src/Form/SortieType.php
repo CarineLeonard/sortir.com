@@ -34,7 +34,6 @@ class SortieType extends AbstractType
             ->add('ville', EntityType::class, [
                 'mapped' => false,
                 'class' => Ville::class,
-                'choice_label' => 'nom',
             ])
             ->add('nouveauLieu', LieuType::class, [
                 'mapped' => false,

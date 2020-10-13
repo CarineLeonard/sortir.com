@@ -65,30 +65,33 @@
 
     {{ form_end(sortieForm) }}
 
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            let $ville = $('sortie_ville');
-            // When sport gets selected ...
-            $ville.change(function() {
-                // ... retrieve the corresponding form.
-                let $form = $(this).closest('form');
-                // Simulate form data, but only include the selected sport value.
-                let data = {};
-                data[$ville.attr('name')] = $ville.val();
-                // Submit data via AJAX to the form's action path.
-                $.ajax({
-                    url : $form.attr('action'),
-                    type: $form.attr('method'),
-                    data : data,
-                    success: function(html) {
-                        // Replace current position field ...
-                        $('#sortie_lieu').replaceWith(
-                            // ... with the returned one from the AJAX response.
-                            $(html).find('#sortie_lieu')
-                        );
-                        // Position field now displays the appropriate positions.
-                    }
-                });
+        let $ville = $('sortie_ville');
+        // When sport gets selected ...
+        $ville.change(function() {
+            // ... retrieve the corresponding form.
+            let $form = $(this).closest('form');
+            // Simulate form data, but only include the selected sport value.
+            let data = {};
+            data[$ville.attr('name')] = $ville.val();
+            // Submit data via AJAX to the form's action path.
+            console.log(data)
+            $.ajax({
+                url : $form.attr('action'),
+                type: $form.attr('method'),
+                data : data,
+                success: function(html) {
+                    console.log('hey !')
+                    // Replace current position field ...
+                    $('#sortie_lieu').replaceWith(
+                        // ... with the returned one from the AJAX response.
+                        $(html).find('#sortie_lieu')
+                    );
+                    // Position field now displays the appropriate positions.
+                }
             });
         });
     </script>
