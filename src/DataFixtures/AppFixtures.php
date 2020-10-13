@@ -94,7 +94,7 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
         for ($i = 0; $i < 20; $i++)
         {
             $sortie = new Sortie();
-            $sortie->setNom($faker->sentence($nbWords = 2, $variableNbWords = true));
+            $sortie->setNom(substr($faker->sentence($nbWords = 2, $variableNbWords = true), 0, 20));
             $sortie->setDateHeureDebut($faker->dateTimeBetween($startDate = '-1 months', $endDate = '+3 months', $timezone = 'Europe/Paris'));
             $sortie->setDuree($faker->numberBetween($min = 1, $max = 288));
             do {
