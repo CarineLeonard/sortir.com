@@ -9,6 +9,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -22,23 +23,25 @@ class SortieType extends AbstractType
         $builder
             ->add('nom')
             ->add('dateHeureDebut', DateTimeType::class, [
-                'widget' => 'single_text'
+                'widget' => 'single_text',
             ])
             ->add('dateLimiteInscription', DateTimeType::class, [
-                'widget' => 'single_text'
+                'widget' => 'single_text',
             ])
             ->add('nbInscriptionsMax')
             ->add('duree')
             ->add('infosSortie', TextareaType::class)
 
             ->add('ville', EntityType::class, [
-                'mapped' => false,
                 'class' => Ville::class,
+                'placeholder' => 'Sélectionnez une ville',
+                'mapped' => false,
+                'disabled' => false,
             ])
             ->add('nouveauLieu', LieuType::class, [
-                'mapped' => false,
                 'label' => false,
                 'required' => false,
+                'mapped' => false,
             ]);
         ;
 
@@ -48,20 +51,43 @@ class SortieType extends AbstractType
 
             $form->add('lieu', EntityType::class, [
                 'class' => Lieu::class,
+                'placeholder' => count($lieux) < 1 ? 'Aucun lieu' : 'Sélectionnez un lieu',
                 'choices' => $lieux,
+                'disabled' => false,
             ]);
         };
 
-        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($villeModifier) {
-            $ville = $event->getForm()->get('ville')->getData();
+        $lieuModifier = function (FormInterface $form, Lieu $lieu = null)
+        {
+            if ($lieu ==! null) {
+                $form->add('lieuNom', TextType::class, [
+                    'data' => $lieu->getNom(),
+                ]);
+            } else {
+                $form->remove('lieuNom');
+            }
+        };
 
+        $builder->addEventListener(FormEvents::POST_SET_DATA, function (FormEvent $event) use ($villeModifier, $lieuModifier) {
+            $ville = $event->getForm()->get('ville')->getData();
             $villeModifier($event->getForm(), $ville);
         });
 
-        $builder->get('ville')->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) use ($villeModifier) {
+        $builder->get('ville')->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) use ($villeModifier, $lieuModifier) {
             $ville = $event->getForm()->getData();
-
             $villeModifier($event->getForm()->getParent(), $ville);
+
+            $lieu = $event->getForm()->getParent()->getData()->getLieu();
+            $lieuModifier($event->getForm()->getParent(), $lieu);
+
+            if ($lieu ==! null)
+            {
+                $lieu->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) use ($lieuModifier) {
+                    $lieu = $event->getForm()->getParent()->getData();
+
+                    $lieuModifier($event->getForm()->getParent(), $lieu);
+                });
+            }
         });
     }
 

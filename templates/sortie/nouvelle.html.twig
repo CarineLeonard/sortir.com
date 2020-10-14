@@ -79,8 +79,10 @@
             let data = {};
             data[$ville.attr('name')] = $ville.val();
             // Also adding datetime fields cause they cause an error
-            data[$('#sortie_dateHeureDebut').attr('name')] = $('#sortie_dateHeureDebut').val();
-            data[$('#sortie_dateLimiteInscription').attr('name')] = $('#sortie_dateLimiteInscription').val();
+            let $dateHeureDebut = $('#sortie_dateHeureDebut');
+            let $dateLimiteInscription = $('#sortie_dateLimiteInscription');
+            data[$dateHeureDebut.attr('name')] = $dateHeureDebut.val();
+            data[$dateLimiteInscription.attr('name')] = $dateLimiteInscription.val();
             // Submit data via AJAX to the form's action path.
             $.ajax({
                 url : $form.attr('action'),
