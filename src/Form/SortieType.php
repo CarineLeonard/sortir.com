@@ -36,7 +36,6 @@ class SortieType extends AbstractType
                 'class' => Ville::class,
                 'placeholder' => 'Sélectionnez une ville',
                 'mapped' => false,
-                'disabled' => false,
             ])
             ->add('nouveauLieu', LieuType::class, [
                 'label' => false,

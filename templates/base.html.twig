@@ -9,11 +9,13 @@
             <link rel="stylesheet" href="{{ asset ("css/style.css") }}">
         {% endblock %}
     </head>
-    <body class="container-fluid">
+    <body>
         {% include 'header.html.twig' %}
-        <main class="text-center">
-            <h1>{% block titre %}{% endblock %}</h1>
-            {% block body %}{% endblock %}
+        <main class="container-fluid text-center scrollable">
+            <div class="container">
+                <h1>{% block titre %}{% endblock %}</h1>
+                {% block body %}{% endblock %}
+            </div>
         </main>
         {% include 'footer.html.twig' %}
         {% block javascripts %}
