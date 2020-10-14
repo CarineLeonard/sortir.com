@@ -12,3 +12,9 @@ h1 {
 .btn {
     margin: 10px;
 }
+
+.my-custom-scrollbar {
+    overflow-y:scroll;
+    height:50px;
+    width: 130vh;
+}

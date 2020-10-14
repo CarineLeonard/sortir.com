@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Participant;
+use App\Entity\Sortie;
 use App\Form\ParticipantType;
 use App\Repository\CampusRepository;
 use App\Repository\ParticipantRepository;
@@ -21,50 +22,20 @@ class MainController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
         if ('ROLE_USER') {
+
+            $sortiesRepo = $this->getDoctrine()->getRepository(Sortie::class) ;
+            $sorties = $sortiesRepo->findAll([]);
+
             return $this->render('main/index.html.twig', [
                 'controller_name' => 'MainController',
+                "sorties" => $sorties,
             ]);
+
+
+
         } else {
             return $this->render('security/login.html.twig');
         }
-
-    }
-
-    /**
-     * @Route("/profil", name="main_profil")
-     */
-    public function profil(ParticipantRepository $participantRepository, CampusRepository $campusRepo, Request $request,
-                           EntityManagerInterface $em, UserInterface $user)
-    {
-        //$participant = new Participant();
-
-        $user = $this->getUser();
-        $participant = $participantRepository -> findOneBy([
-            'mail' => ($user->getUsername())  ]);
-
-        $participant->getNom();
-        $participant->getPrenom();
-        $participant->getPseudo();
-        $participant->getTelephone();
-        $participant->getMail();
-        $participant->getPassword();
-        $participant->getCampus();
-        $this->denyAccessUnlessGranted('ROLE_USER');
-        $participantForm = $this->createForm(ParticipantType::class, $participant) ;
-
-
-        $participantForm->handleRequest($request);
-        if ($participantForm->isSubmitted() && $participantForm->isValid()) {
-
-            $participant = $participantForm->getData();
-            $em->persist($participant);
-            $em->flush();
-            $this->addFlash('success', 'Votre profil a bien été mis à jour!');
-            return $this->redirectToRoute('main_index');
-        }
-        return $this->render('main/profil.html.twig', [
-            'participantForm' => $participantForm->createView()
-        ]);
 
     }
 
