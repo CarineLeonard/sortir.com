@@ -55,4 +55,38 @@ class SortieController extends AbstractController
             'sortieForm' => $sortieForm->createView(),
         ]);
     }
+
+    /**
+     * @Route("/modifier", name="modifier")
+     */
+    public function modifier()
+    {
+
+        return $this->render('sortie/modifier.html.twig', [
+            'controller_name' => 'SortieController',
+        ]);
+    }
+
+    /**
+     * @Route("/annuler", name="annuler")
+     */
+    public function annuler()
+    {
+
+        return $this->render('sortie/annuler.html.twig', [
+            'controller_name' => 'SortieController',
+        ]);
+    }
+
+    /**
+     * @Route("/afficher", name="afficher")
+     */
+    public function afficher()
+    {
+
+        return $this->render('sortie/afficher.html.twig', [
+            'controller_name' => 'SortieController',
+        ]);
+    }
+
 }

@@ -28,12 +28,60 @@
                     <td>{{ sortie.dateLimiteInscription |date('d/m/Y') }}</td>
                     <td>{{ sortie.participants | length}}/{{ sortie.nbInscriptionsMax }}</td>
                     <td>{{ sortie.etat.libelle}}</td>
-                    <td>if ?</td>
+                    <td>
+                        {% for participant in sortie.participants %}
+                            {% if app.user.username == participant.username %}
+                                x
+                            {% endif %}
+                        {% endfor %}
+                    </td>
                     <td><a href="{{ path ('participant_user', {'id' : sortie.organisateur.idParticipant }) }}">{{ sortie.organisateur.pseudo}}</a></td>
-                    <td>if ?</td>
+                    <td>
+                        {% set myVal = false %}
+                        {#  si on est l'organisateur de la sortie #}
+                        {% if app.user.username == sortie.organisateur.username %}
+                            {% if sortie.etat.libelle == 'créée' %}
+                                <a href="{{ path ('sortie_modifier') }}">Modifier</a> - Publier
+                            {% elseif sortie.etat.libelle == 'ouverte' or sortie.etat.libelle == 'clôturée' %}
+                                <a href="{{ path ('sortie_afficher') }}">Afficher</a> - <a href="{{ path ('sortie_annuler') }}">Annuler</a>
+                            {% else %}
+                                <a href="{{ path ('sortie_afficher') }}">Afficher</a>
+                            {% endif %}
+                            {% set myVal = true %}
+                        {% endif %}
+
+                        {% for participant in sortie.participants %}
+                            {#  si on est inscrit à la sortie #}
+                            {% if app.user.username == participant.username %}
+                                {% if sortie.etat.libelle == 'ouverte' or sortie.etat.libelle == 'clôturée' %}
+                                    <a href="{{ path ('sortie_afficher') }}">Afficher</a> - Se désister
+                                {% elseif sortie.etat.libelle == 'créée' %}
+                                    <p></p>
+                                {% else %}
+                                    <a href="{{ path ('sortie_afficher') }}">Afficher</a>
+                                {% endif %}
+                            {% set myVal = true %}
+                            {% endif %}
+                        {% endfor %}
+                            {#  autrement : pas orga, pas inscrit #}
+                            {% if myVal == false %}
+                                {% if sortie.etat.libelle == 'ouverte' %}
+                                    <a href="{{ path ('sortie_afficher') }}">Afficher</a> - S'inscrire'
+                                {% elseif sortie.etat.libelle == 'créée' %}
+                                    <p></p>
+                                {% else %}
+                                    <a href="{{ path ('sortie_afficher') }}">Afficher</a>
+                                {% endif %}
+                            {% endif %}
+
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
     </div>
+    <div class="d-flex flex-row">
+        <a class="btn btn-primary p-2" href="{{ path ('sortie_nouvelle') }}">Créer une sortie</a>
+    </div>
+
 {% endblock %}
