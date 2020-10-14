@@ -29,7 +29,7 @@
                     <td>{{ sortie.participants | length}}/{{ sortie.nbInscriptionsMax }}</td>
                     <td>{{ sortie.etat.libelle}}</td>
                     <td>if ?</td>
-                    <td>{{ sortie.organisateur.pseudo}}</td>
+                    <td><a href="{{ path ('participant_user', {'id' : sortie.organisateur.idParticipant }) }}">{{ sortie.organisateur.pseudo}}</a></td>
                     <td>if ?</td>
                 </tr>
             {% endfor %}

@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sortir.com | {{ participant.pseudo }} {% endblock %}
+{% block titre %}{{ participant.pseudo }}{% endblock %}
+
+{% block body %}
+<div>
+    <div class="form-group row justify-content-center">
+        <label for="prenom" class="col-2">Prénom : </label>
+        <div id="prenom" class="form-control-plaintext col-2">{{ participant.prenom }}</div>
+    </div>
+    <div class="form-group row justify-content-center">
+        <label for="nom" class="col-2">Nom : </label>
+        <div id="nom" class="form-control-plaintext col-2">{{ participant.nom }}</div>
+    </div>
+    <div class="form-group row justify-content-center ">
+        <label for="telephone" class="col-2">Téléphone : </label>
+        <div id="telephone" class="form-control-plaintext col-2">{{ participant.telephone }}</div>
+    </div>
+    <div class="form-group row justify-content-center ">
+        <label for="email" class="col-2">Email : </label>
+        <div id="email" class="form-control-plaintext col-2">{{ participant.mail }}</div>
+    </div>
+    <div class="form-group row justify-content-center">
+        <label for="campus" class="col-2">Prenom : </label>
+        <div id="campus" class="form-control-plaintext col-2">{{ participant.campus.nom }}</div>
+    </div>
+    <a class="btn btn-primary justify-content-center" href="{{ path ('main_index') }}">Retour</a>
+</div>
+{% endblock %}

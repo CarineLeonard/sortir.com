@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Participant;
 use App\Form\ParticipantType;
 use App\Repository\CampusRepository;
 use App\Repository\ParticipantRepository;
@@ -50,5 +51,18 @@ class ParticipantController extends AbstractController
         ]);
     }
 
-    
+    /**
+     * @Route("/user/{id}", name="participant_user", requirements={"id"="\d+"}, methods={"GET"})
+     */
+    public function user ($id, Request $request)
+    {
+        $participantRepo = $this->getDoctrine()->getRepository(Participant::class) ;
+        $participant = $participantRepo -> find($id);
+
+
+        return $this->render('participant/user.html.twig', [
+            'controller_name' => 'ParticipantController',
+            "participant" => $participant,
+        ]);
+    }
 }
