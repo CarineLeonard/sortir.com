@@ -41,7 +41,7 @@
                         {#  si on est l'organisateur de la sortie #}
                         {% if app.user.username == sortie.organisateur.username %}
                             {% if sortie.etat.libelle == 'créée' %}
-                                <a href="{{ path ('sortie_modifier') }}">Modifier - Publier</a>
+                                <a href="{{ path ('sortie_modifier') }}">Modifier</a> - Publier
                             {% elseif sortie.etat.libelle == 'ouverte' or sortie.etat.libelle == 'clôturée' %}
                                 <a href="{{ path ('sortie_afficher') }}">Afficher</a> - <a href="{{ path ('sortie_annuler') }}">Annuler</a>
                             {% else %}
