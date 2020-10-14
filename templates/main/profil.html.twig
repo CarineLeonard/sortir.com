@@ -1,20 +1,22 @@
 {% extends 'base.html.twig' %}
+{% form_theme participantForm 'form/bootstrap_4_horizontal_layout.html.twig' %}
 
 {% block title %}Sortir.com | Mon profil{% endblock %}
 {% block titre %}Mon Profil{% endblock %}
 
 {% block body %}
     {{ form_start(participantForm) }}
-<div class="form-inline">
-    <div class="justify-content-center">
-        <div class="form-group row justify-content-center">{{ form_row(participantForm.pseudo) }}</div>
-        <div class="form-group row justify-content-center"> {{ form_row(participantForm.prenom) }}</div>
-        <div class="form-group row justify-content-center">{{ form_row(participantForm.nom) }}</div>
-        <div class="form-group row justify-content-center">{{ form_row(participantForm.telephone) }}</div>
-        <div class="form-group row justify-content-center">{{ form_row(participantForm.mail) }}</div>
-        <div class="form-group row justify-content-center">{{ form_row(participantForm.motPasse) }}</div>
-        <div class="form-group row justify-content-center">{{ form_row(participantForm.campus) }}</div>
-        <button type="submit" class="btn btn-primary">Update!</button>
+<div class="row justify-content-center">
+    <div class="col-6">
+        {{ form_row(participantForm.pseudo) }}
+        {{ form_row(participantForm.prenom) }}
+        {{ form_row(participantForm.nom) }}
+        {{ form_row(participantForm.telephone) }}
+        {{ form_row(participantForm.mail) }}
+        {{ form_row(participantForm.motPasse) }}
+        {{ form_row(participantForm.campus) }}
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+        <a class="btn btn-primary" href="{{ path ('main_index') }}">Annuler</a>
     </div>
 
 

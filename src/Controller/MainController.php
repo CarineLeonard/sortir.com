@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Participant;
 use App\Form\ParticipantType;
+use App\Repository\CampusRepository;
 use App\Repository\ParticipantRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -32,12 +33,15 @@ class MainController extends AbstractController
     /**
      * @Route("/profil", name="main_profil")
      */
-    public function profil(ParticipantRepository $participantRepository, Request $request, EntityManagerInterface $em, UserInterface $user)
+    public function profil(ParticipantRepository $participantRepository, CampusRepository $campusRepo, Request $request,
+                           EntityManagerInterface $em, UserInterface $user)
     {
+        //$participant = new Participant();
+
         $user = $this->getUser();
         $participant = $participantRepository -> findOneBy([
-            'mail' => ($user->getUsername())
-        ]);
+            'mail' => ($user->getUsername())  ]);
+
         $participant->getNom();
         $participant->getPrenom();
         $participant->getPseudo();
@@ -56,7 +60,7 @@ class MainController extends AbstractController
             $em->persist($participant);
             $em->flush();
             $this->addFlash('success', 'Votre profil a bien été mis à jour!');
-            return $this->redirectToRoute('main/index.html.twig', ['idParticipant' => $participant->getIdParticipant(),]);
+            return $this->redirectToRoute('main_index');
         }
         return $this->render('main/profil.html.twig', [
             'participantForm' => $participantForm->createView()
