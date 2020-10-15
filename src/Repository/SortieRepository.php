@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Sortie;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\FetchMode;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -18,6 +19,8 @@ class SortieRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Sortie::class);
     }
+
+
 
     // /**
     //  * @return Sortie[] Returns an array of Sortie objects

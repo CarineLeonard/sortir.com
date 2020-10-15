@@ -24,10 +24,15 @@ class DashboardController extends AbstractDashboardController
      */
     public function index(): Response
     {
-        return parent::index();
+        $users = $this->getDoctrine()->getRepository(Participant::class)->count([]);
+        $sorties = $this->getDoctrine()->getRepository(Sortie::class)->count([]);
+        return $this->render('admin/my-dashboard.html.twig', [
+            'users' => $users,
+            'sorties' => $sorties,
+        ]);
     }
 
-    public function configureDashboard(): Dashboard
+     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
             ->setTitle('Sortir');

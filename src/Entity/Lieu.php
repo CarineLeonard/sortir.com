@@ -39,7 +39,7 @@ class Lieu
 
     // attention avoir le nom des champs dans join column !
     /**
-     * @ORM\ManyToOne(targetEntity=Ville::class, inversedBy="lieux")
+     * @ORM\ManyToOne(targetEntity=Ville::class, inversedBy="lieux", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false, name="id_ville", referencedColumnName="id_ville")
      */
     private $ville;

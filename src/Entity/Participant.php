@@ -6,6 +6,7 @@ use App\Repository\ParticipantRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -58,13 +59,13 @@ class Participant implements UserInterface
     private $actif;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Campus::class)
-     * @ORM\JoinColumn(nullable=false, name="id_campus", referencedColumnName="id_campus")
+     * @ORM\ManyToOne(targetEntity=Campus::class, cascade={"persist"})
+     * @ORM\JoinColumn(nullable=false, name="id_campus", referencedColumnName="id_campus", onDelete="")
      */
     private $campus;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Sortie::class)
+     * @ORM\ManyToMany(targetEntity=Sortie::class, cascade={"remove"})
      * 	@ORM\JoinTable(name = "participant_sortie",
      *      joinColumns = { @ORM\JoinColumn(name = "id_participant", referencedColumnName="id_participant") },
      *      inverseJoinColumns = { @ORM\JoinColumn(name = "id_sortie", referencedColumnName="id_sortie") })
@@ -75,6 +76,18 @@ class Participant implements UserInterface
      * @ORM\Column(type="string", length=30 , unique=true)
      */
     private $pseudo;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     * @Gedmo\Timestampable(on="create")
+     */
+    private $created;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     * @Gedmo\Timestampable(on="update")
+     */
+    private $updated;
 
     public function __construct()
     {
@@ -254,5 +267,29 @@ class Participant implements UserInterface
 
     public function __toString(){
         return $this->pseudo;
+    }
+
+    public function getCreated(): ?\DateTimeInterface
+    {
+        return $this->created;
+    }
+
+    public function setCreated(?\DateTimeInterface $created): self
+    {
+        $this->created = $created;
+
+        return $this;
+    }
+
+    public function getUpdated(): ?\DateTimeInterface
+    {
+        return $this->updated;
+    }
+
+    public function setUpdated(?\DateTimeInterface $updated): self
+    {
+        $this->updated = $updated;
+
+        return $this;
     }
 }
