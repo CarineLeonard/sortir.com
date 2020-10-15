@@ -24,11 +24,19 @@ h1 {
     overflow-y: scroll;
 }
 /* ScrollBar pour webkit (Chrome,Safari,Edge,Opera,... mais pas Firefox) */
-.scrollable::-webkit-scrollbar {
+::-webkit-scrollbar {
     background: #FFFFFF;
     width: 10px;
 }
-.scrollable::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
     background-color: #78C2AD;
     border-radius: 10px;
 }
+
+.tableFixHead          { overflow-y: auto; height: calc(80vh - 150px); }
+.tableFixHead thead th { position: sticky; top: 0; }
+
+/* Just common table stuff. Really. */
+table  { border-collapse: collapse; width: 100%; }
+th, td { padding: 8px 16px; }
+th     { background:#eee; }
