@@ -36,6 +36,7 @@ class SortieType extends AbstractType
                 'class' => Ville::class,
                 'placeholder' => 'Sélectionnez une ville',
                 'mapped' => false,
+                //'data' => 'object representing the default value'
             ])
             ->add('nouveauLieu', LieuType::class, [
                 'label' => false,
@@ -52,7 +53,7 @@ class SortieType extends AbstractType
                 'class' => Lieu::class,
                 'placeholder' => count($lieux) < 1 ? 'Aucun lieu' : 'Sélectionnez un lieu',
                 'choices' => $lieux,
-                'disabled' => false,
+                'disabled' => count($lieux) < 1,
             ]);
         };
 
