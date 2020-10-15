@@ -86,6 +86,11 @@ class Participant implements UserInterface
         return $this->idParticipant;
     }
 
+    public function getId(): ?int
+    {
+        return $this->idParticipant;
+    }
+
     public function getNom(): ?string
     {
         return $this->nom;
@@ -245,5 +250,9 @@ class Participant implements UserInterface
         $this->pseudo = $pseudo;
 
         return $this;
+    }
+
+    public function __toString(){
+        return $this->pseudo;
     }
 }
