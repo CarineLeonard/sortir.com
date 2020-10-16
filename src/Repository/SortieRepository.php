@@ -40,12 +40,15 @@ class SortieRepository extends ServiceEntityRepository
         $datetime1Mois = date_modify(new \DateTime(), '-1 month');
         $query = $this
             ->createQueryBuilder('p')
-            ->select('c', 'p')
+            //->select('p.nom', 'p.dateHeureDebut', 'p.dateLimiteInscription', 'p.nbInscriptionsMax', 'e.libelle', 'pa.mail'
+            //,'o.idParticipant', 'o.pseudo')
+            ->select('p','c','o', 'pa','e')
             ->join('p.siteOrganisateur', 'c')
             ->join('p.organisateur',  'o')
             ->join('p.participants', 'pa')
+            ->join('p.etat', 'e')
             ->andWhere('p.dateHeureDebut >= (:datetime1Mois)')
-            ->setParameter('datetime1Mois', $datetime1Mois);;
+            ->setParameter('datetime1Mois', $datetime1Mois);
 
         if (!empty($search->q)) {
             $query = $query
@@ -67,7 +70,7 @@ class SortieRepository extends ServiceEntityRepository
 
         if (!empty($search->campus)) {
             $query = $query
-                ->andWhere('c.idCampus IN (:campus)')
+                ->andWhere('p.siteOrganisateur IN (:campus)')
                 ->setParameter('campus', $search->campus);
         }
 
@@ -87,7 +90,6 @@ class SortieRepository extends ServiceEntityRepository
             $query = $query
                 ->andWhere(':user not member of p.participants')
                 ->setParameter('user', $user);
-            dump($query);
         }
 
         $datetime = new \DateTime();

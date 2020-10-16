@@ -83,7 +83,7 @@ class Sortie
     private $siteOrganisateur;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Participant::class, cascade={"remove"})
+     * @ORM\ManyToMany(targetEntity=Participant::class)
      * @ORM\JoinTable(name = "sortie_participant",
      *      joinColumns = { @ORM\JoinColumn(name="id_sortie", referencedColumnName="id_sortie") },
      *      inverseJoinColumns = { @ORM\JoinColumn(name = "id_participant", referencedColumnName="id_participant") })

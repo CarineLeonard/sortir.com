@@ -13,6 +13,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 /**
  * @ORM\Entity(repositoryClass=ParticipantRepository::class)
  * @UniqueEntity("mail", message="Ce mail est déjà utilisé !")
+ * @UniqueEntity("pseudo", message="Ce pseudo est déjà utilisé !")
  */
 class Participant implements UserInterface
 {

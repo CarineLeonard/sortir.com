@@ -20,6 +20,7 @@ class MainController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_USER');
         if ('ROLE_USER') {
 
+            $date = new \DateTime();
             $user = $this->getUser();
             $data = new SearchData();
             $data->page = $request->get('page', 1);
@@ -28,6 +29,7 @@ class MainController extends AbstractController
             $sorties = $sortiesRepo->findSearch($data, $user);
             return $this->render('main/index.html.twig', [
                 'sorties' => $sorties,
+                'date' => $date,
                 'form' => $form->createView()
             ]);
 
