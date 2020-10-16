@@ -34,15 +34,18 @@ class SortieRepository extends ServiceEntityRepository
         );
     } */
 
-    public function findSearch(SearchData $search, UserInterface $user): QueryBuilder
+    public function findSearch(SearchData $search, UserInterface $user)
     {
         //$sorties = $sortiesRepo->findAll();
-
+        $datetime1Mois = date_modify(new \DateTime(), '-1 month');
         $query = $this
             ->createQueryBuilder('p')
             ->select('c', 'p')
             ->join('p.siteOrganisateur', 'c')
-            ->join('p.organisateur',  'o');
+            ->join('p.organisateur',  'o')
+            ->join('p.participants', 'pa')
+            ->andWhere('p.dateHeureDebut >= (:datetime1Mois)')
+            ->setParameter('datetime1Mois', $datetime1Mois);;
 
         if (!empty($search->q)) {
             $query = $query
@@ -70,26 +73,32 @@ class SortieRepository extends ServiceEntityRepository
 
         if (!empty($search->organisateur)) {
             $query = $query
-                ->andWhere('$user->getUsername() == p.organisateur.username');
+                ->andWhere('p.organisateur = :user' )
+                ->setParameter('user', $user);
         }
 
         if (!empty($search->inscrit)) {
             $query = $query
-                ->andWhere('$user->getUsername() IN p.participants.username');
+                ->andWhere(':user member of p.participants')
+                ->setParameter('user', $user);
         }
 
         if (!empty($search->nonInscrit)) {
             $query = $query
-                ->andWhere('$user->getUsername() NOT IN p.participants.username');
+                ->andWhere(':user not member of p.participants')
+                ->setParameter('user', $user);
+            dump($query);
         }
 
+        $datetime = new \DateTime();
         if (!empty($search->fini)) {
             $query = $query
-                ->andWhere('p.dateLimiteInscription >= NOW()');
+                ->andWhere('p.dateHeureDebut <= (:datetime)')
+                ->setParameter('datetime', $datetime);
         }
 
-        //$query2 = $query->getQuery()->execute();
-        return $query;
+        $query2 = $query->getQuery();
+        return $query2->execute();
     }
 
 

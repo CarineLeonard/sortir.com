@@ -23,36 +23,34 @@ class SearchData{
     public $campus = [];
 
     /**
-     * @Assert\DateTime
-     * @var string A "d-m-Y H:i" formatted value
+     * @var \DateTime
      */
     public $dateMax;
 
     /**
-     * @Assert\DateTime
-     * @var string A "d-m-Y H:i" formatted value
+     * @var \DateTime
      */
     public $dateMin;
 
     /**
      * @var boolean
      */
-    public $organisateur = true;
+    public $organisateur = false;
 
     /**
      * @var boolean
      */
-    public $inscrit = true;
+    public $inscrit = false;
 
     /**
      * @var boolean
      */
-    public $nonInscrit = true;
+    public $nonInscrit = false;
 
     /**
      * @var boolean
      */
-    public $fini = true;
+    public $fini = false;
 
 
 }

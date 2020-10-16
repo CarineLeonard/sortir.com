@@ -31,26 +31,6 @@ class MainController extends AbstractController
                 'form' => $form->createView()
             ]);
 
-            /*$rechercheForm = $this->createForm(RechercheSortieType::class);
-            $rechercheForm->handleRequest($request);
-
-            $sorties = $sortiesRepo->findAll();
-
-            if ($rechercheForm->isSubmitted() && $rechercheForm->isValid()) {
-                $nom = $rechercheForm->getData()->getNom();
-                $rechercheNom = $sortiesRepo->search($nom);
-
-                if ($rechercheNom == null) {
-                    $this->addFlash('erreur', 'Aucune sortie trouvée.');
-                }
-            }
-
-            return $this->render('main/index.html.twig', [
-                'controller_name' => 'MainController',
-                'sorties' => $sorties,
-                'rechercheForm' => $rechercheForm->createView()
-            ]); */
-
         } else {
             return $this->render('security/login.html.twig');
         }
