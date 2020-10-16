@@ -14,6 +14,13 @@ h1 {
     margin: 10px;
 }
 
+.flash {
+    position: absolute;
+    top: 60px;
+    left: 50%;
+    transform: translate(-50%);
+}
+
 .scrollable {
     /* défini la taille du conteneur par rapport à la hauteur de la fenêtre moins les marges verticales du body */
     max-height: calc(100vh - 118px);

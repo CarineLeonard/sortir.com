@@ -31,18 +31,11 @@ class SortieType extends AbstractType
             ->add('nbInscriptionsMax')
             ->add('duree')
             ->add('infosSortie', TextareaType::class)
-
             ->add('ville', EntityType::class, [
                 'class' => Ville::class,
-                'placeholder' => 'Sélectionnez une ville',
                 'mapped' => false,
                 //'data' => 'object representing the default value'
             ])
-            ->add('nouveauLieu', LieuType::class, [
-                'label' => false,
-                'required' => false,
-                'mapped' => false,
-            ]);
         ;
 
         $villeModifier = function (FormInterface $form, Ville $ville = null)
@@ -57,37 +50,15 @@ class SortieType extends AbstractType
             ]);
         };
 
-        $lieuModifier = function (FormInterface $form, Lieu $lieu = null)
-        {
-            if ($lieu ==! null) {
-                $form->add('lieuNom', TextType::class, [
-                    'data' => $lieu->getNom(),
-                ]);
-            } else {
-                $form->remove('lieuNom');
-            }
-        };
-
-        $builder->addEventListener(FormEvents::POST_SET_DATA, function (FormEvent $event) use ($villeModifier, $lieuModifier) {
-            $ville = $event->getForm()->get('ville')->getData();
-            $villeModifier($event->getForm(), $ville);
+        $builder->get('ville')->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($villeModifier) {
+            $ville = $event->getData();
+            dump($event);
+            $villeModifier($event->getForm()->getParent(), $ville);
         });
 
-        $builder->get('ville')->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) use ($villeModifier, $lieuModifier) {
+        $builder->get('ville')->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) use ($villeModifier) {
             $ville = $event->getForm()->getData();
             $villeModifier($event->getForm()->getParent(), $ville);
-
-            $lieu = $event->getForm()->getParent()->getData()->getLieu();
-            $lieuModifier($event->getForm()->getParent(), $lieu);
-
-            if ($lieu ==! null)
-            {
-                $lieu->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) use ($lieuModifier) {
-                    $lieu = $event->getForm()->getParent()->getData();
-
-                    $lieuModifier($event->getForm()->getParent(), $lieu);
-                });
-            }
         });
     }
 

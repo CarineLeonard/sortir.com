@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\VilleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=VilleRepository::class)
@@ -25,6 +26,7 @@ class Ville
 
     /**
      * @ORM\Column(type="string", length=10)
+     * @Groups({"lieu"})
      */
     private $codePostal;
 
@@ -58,12 +60,12 @@ class Ville
 
     public function getCodePostal(): ?string
     {
-        return $this->codePostal;
+        return str_replace(' ', '', $this->codePostal);
     }
 
     public function setCodePostal(string $codePostal): self
     {
-        $this->codePostal = $codePostal;
+        $this->codePostal = str_replace(' ', '', $codePostal);
 
         return $this;
     }

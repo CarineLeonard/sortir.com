@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Etat;
+use App\Entity\Lieu;
 use App\Entity\Participant;
 use App\Entity\Sortie;
+use App\Form\LieuType;
 use App\Form\SortieType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,7 +28,6 @@ class SortieController extends AbstractController
         $sortie = new Sortie();
         $sortie->setDateHeureDebut(new \DateTime());
         $sortie->setDateLimiteInscription(new \DateTime());
-
         $sortieForm = $this->createForm(SortieType::class, $sortie);
 
         $sortieForm->handleRequest($request);
@@ -50,9 +51,13 @@ class SortieController extends AbstractController
             ]);
         }
 
+        $lieu = new Lieu();
+        $lieuForm = $this->createForm(LieuType::class, $lieu);
+
         return $this->render('sortie/nouvelle.html.twig', [
             'controller_name' => 'SortieController',
             'sortieForm' => $sortieForm->createView(),
+            'lieuForm' => $lieuForm->createView(),
         ]);
     }
 
