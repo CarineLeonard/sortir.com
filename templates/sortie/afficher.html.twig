@@ -1,8 +1,81 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Afficher les sorties{% endblock %}
-{% block titre %} Afficher les sorties{% endblock %}
+{% block title %}Afficher une sortie{% endblock %}
+{% block titre %}Afficher une sortie{% endblock %}
 
 {% block body %}
-    <p>TO DO</p>
+<div class="row">
+
+    <div class="col-6 justify-content-center text-left">
+        <div class="form-group row justify-content-start">
+            <label for="nom" class="col-6">Nom de la sortie : </label>
+            <div id="nom" class="form-control-plaintext col-6">{{ sortie.nom }}</div>
+        </div>
+        <div class="form-group row justify-content-start">
+            <label for="datedebut" class="col-6">Date et heure de la sortie : </label>
+            <div id="datedebut" class="form-control-plaintext col-6">{{ sortie.dateHeureDebut | date('d/m/Y H:i') }}</div>
+        </div>
+        <div class="form-group row justify-content-start">
+            <label for="datelimite" class="col-6">Date et heure de la sortie : </label>
+            <div id="datelimite" class="form-control-plaintext col-6">{{ sortie.dateLimiteInscription | date('d/m/Y')}}</div>
+        </div>
+        <div class="form-group row justify-content-start">
+            <label for="nbPlace" class="col-6">Nombre de place : </label>
+            <div id="nbPlace" class="form-control-plaintext col-6">{{ sortie.nbInscriptionsMax }}</div>
+        </div>
+        <div class="form-group row justify-content-start">
+            <label for="duree" class="col-6">Durée : </label>
+            <div id="duree" class="form-control-plaintext col-6">{{ sortie.duree }} minutes</div>
+        </div>
+        <div class="form-group row justify-content-start">
+            <label for="descr" class="col-6">Description et infos : </label>
+            <div id="descr" class="form-control-plaintext col-6">{{ sortie.infosSortie }}</div>
+        </div>
+    </div>
+    <div class=" col-offset-1 col-5 justify-content-center text-left">
+        <div class="form-group row justify-content-start">
+            <label for="campus" class="col-6">Campus : </label>
+            <div id="campus" class="form-control-plaintext col-6">{{ sortie.siteOrganisateur }}</div>
+        </div>
+        <div class="form-group row justify-content-start">
+            <label for="lieu" class="col-6">Lieu : </label>
+            <div id="lieu" class="form-control-plaintext col-6">{{ sortie.lieu.nom }}</div>
+        </div>
+        <div class="form-group row justify-content-start">
+            <label for="rue" class="col-6">Rue : </label>
+            <div id="rue" class="form-control-plaintext col-6">{{ sortie.lieu.rue }}</div>
+        </div>
+        <div class="form-group row justify-content-start">
+            <label for="ville" class="col-6">Ville : </label>
+            <div id="ville" class="form-control-plaintext col-6">{{ sortie.lieu.ville.__toString }}</div>
+        </div>
+        <div class="form-group row justify-content-start">
+            <label for="latitude" class="col-6">Latitude : </label>
+            <div id="latitude" class="form-control-plaintext col-6">{{ sortie.lieu.latitude }}</div>
+        </div>
+        <div class="form-group row justify-content-start">
+            <label for="longitude" class="col-6">Longitude : </label>
+            <div id="longitude" class="form-control-plaintext col-6">{{ sortie.lieu.longitude }}</div>
+        </div>
+    </div>
+</div>
+<div class="justify-content-start col-5">
+    <table class="table table-striped table-bordered table-sm " cellspacing="0"
+           width="100%">
+        <thead>
+            <tr>
+                <th>Pseudo</th>
+                <th>Nom</th>
+            </tr>
+        </thead>
+        <tbody class="scrolltab">
+        {% for participant in sortie.participants %}
+            <tr class="participant">
+                <td>{{ participant.pseudo }}</td>
+                <td>{{ participant.nom | upper }} {{ participant.prenom | capitalize }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

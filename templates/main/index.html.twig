@@ -71,7 +71,7 @@
                     <td>{{ sortie.etat.libelle}}</td>
                     <td>
                         {% for participant in sortie.participants %}
-                            {% if app.user.username == participant.mail %}
+                            {% if app.user.username == participant.username %}
                                 x
                             {% endif %}
                         {% endfor %}
@@ -80,26 +80,26 @@
                     <td>
                         {% set myVal = false %}
                         {#  si on est l'organisateur de la sortie #}
-                        {% if app.user.username == sortie.organisateur.mail %}
+                        {% if app.user.username == sortie.organisateur.mail or app.user.username == sortie.organisateur.pseudo %}
                             {% if sortie.etat.libelle == 'créée' %}
                                 <a href="{{ path ('sortie_modifier') }}">Modifier</a> - Publier
                             {% elseif sortie.etat.libelle == 'ouverte' or sortie.etat.libelle == 'clôturée' %}
-                                <a href="{{ path ('sortie_afficher') }}">Afficher</a> - <a href="{{ path ('sortie_annuler') }}">Annuler</a>
+                                <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a> - <a href="{{ path ('sortie_annuler') }}">Annuler</a>
                             {% else %}
-                                <a href="{{ path ('sortie_afficher') }}">Afficher</a>
+                                <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a>
                             {% endif %}
                             {% set myVal = true %}
                         {% endif %}
 
                         {% for participant in sortie.participants %}
                             {#  si on est inscrit à la sortie #}
-                            {% if app.user.username == participant.mail %}
+                            {% if app.user.username == participant.mail or app.user.username == participant.pseudo %}
                                 {% if sortie.etat.libelle == 'ouverte' or sortie.etat.libelle == 'clôturée' %}
-                                    <a href="{{ path ('sortie_afficher') }}">Afficher</a> - Se désister
+                                    <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a> - Se désister
                                 {% elseif sortie.etat.libelle == 'créée' %}
                                     <p></p>
                                 {% else %}
-                                    <a href="{{ path ('sortie_afficher') }}">Afficher</a>
+                                    <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a>
                                 {% endif %}
                             {% set myVal = true %}
                             {% endif %}
@@ -107,11 +107,11 @@
                             {#  autrement : pas orga, pas inscrit #}
                             {% if myVal == false %}
                                 {% if sortie.etat.libelle == 'ouverte' %}
-                                    <a href="{{ path ('sortie_afficher') }}">Afficher</a> - S'inscrire'
+                                    <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a> - S'inscrire'
                                 {% elseif sortie.etat.libelle == 'créée' %}
                                     <p></p>
                                 {% else %}
-                                    <a href="{{ path ('sortie_afficher') }}">Afficher</a>
+                                    <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a>
                                 {% endif %}
                             {% endif %}
 

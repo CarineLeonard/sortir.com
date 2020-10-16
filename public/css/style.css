@@ -3,7 +3,8 @@ body {
     margin-bottom: 59px; /* marge du footer */
 }
 h1 {
-    margin: 25px;
+    margin-top: 25px;
+    margin-bottom: 50px;
 }
 
 .centre {
