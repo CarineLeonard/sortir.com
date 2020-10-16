@@ -9,12 +9,9 @@
         "doctrine/doctrine-bundle": "^2.1",
         "doctrine/doctrine-migrations-bundle": "^3.0",
         "doctrine/orm": "^2.7",
-<<<<<<< HEAD
         "friendsofsymfony/jsrouting-bundle": "^2.6",
-=======
         "easycorp/easyadmin-bundle": "^3.1",
         "knplabs/knp-paginator-bundle": "^5.3",
->>>>>>> 33851840f1c58af6181e66524fdd9779ab42f49c
         "sensio/framework-extra-bundle": "^5.6",
         "stof/doctrine-extensions-bundle": "^1.5",
         "symfony/apache-pack": "^1.0",

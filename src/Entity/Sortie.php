@@ -6,11 +6,8 @@ use App\Repository\SortieRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-<<<<<<< HEAD
 use Symfony\Component\Validator\Constraints as Assert;
-=======
 use Gedmo\Mapping\Annotation as Gedmo;
->>>>>>> 33851840f1c58af6181e66524fdd9779ab42f49c
 
 /**
  * @ORM\Entity(repositoryClass=SortieRepository::class)
