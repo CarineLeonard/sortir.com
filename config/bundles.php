@@ -13,5 +13,11 @@ return [
     Symfony\Bundle\MonologBundle\MonologBundle::class => ['all' => true],
     Symfony\Bundle\DebugBundle\DebugBundle::class => ['dev' => true, 'test' => true],
     Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle::class => ['dev' => true, 'test' => true],
+<<<<<<< HEAD
     FOS\JsRoutingBundle\FOSJsRoutingBundle::class => ['all' => true],
+=======
+    EasyCorp\Bundle\EasyAdminBundle\EasyAdminBundle::class => ['all' => true],
+    Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle::class => ['all' => true],
+    Knp\Bundle\PaginatorBundle\KnpPaginatorBundle::class => ['all' => true],
+>>>>>>> 33851840f1c58af6181e66524fdd9779ab42f49c
 ];

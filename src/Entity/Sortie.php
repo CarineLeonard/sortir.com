@@ -6,7 +6,11 @@ use App\Repository\SortieRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+<<<<<<< HEAD
 use Symfony\Component\Validator\Constraints as Assert;
+=======
+use Gedmo\Mapping\Annotation as Gedmo;
+>>>>>>> 33851840f1c58af6181e66524fdd9779ab42f49c
 
 /**
  * @ORM\Entity(repositoryClass=SortieRepository::class)
@@ -57,37 +61,49 @@ class Sortie
     private $infosSortie;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Participant::class)
+     * @ORM\ManyToOne(targetEntity=Participant::class, cascade={"persist"})
      * @ORM\JoinColumn(nullable=false, name="id_participant", referencedColumnName="id_participant")
      */
     private $organisateur;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Lieu::class)
+     * @ORM\ManyToOne(targetEntity=Lieu::class, cascade={"persist"})
      * @ORM\JoinColumn(nullable=false, name="id_lieu", referencedColumnName="id_lieu")
      * @Assert\NotBlank(message="Le lieu ne doit pas être vide !")
      */
     private $lieu;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Etat::class)
+     * @ORM\ManyToOne(targetEntity=Etat::class, cascade={"persist"})
      * @ORM\JoinColumn(nullable=false, name="id_etat", referencedColumnName="id_etat")
      */
     private $etat;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Campus::class)
+     * @ORM\ManyToOne(targetEntity=Campus::class, cascade={"persist"})
      * @ORM\JoinColumn(nullable=false, name="id_campus", referencedColumnName="id_campus")
      */
     private $siteOrganisateur;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Participant::class)
+     * @ORM\ManyToMany(targetEntity=Participant::class, cascade={"remove"})
      * @ORM\JoinTable(name = "sortie_participant",
      *      joinColumns = { @ORM\JoinColumn(name="id_sortie", referencedColumnName="id_sortie") },
      *      inverseJoinColumns = { @ORM\JoinColumn(name = "id_participant", referencedColumnName="id_participant") })
      */
     private $participants;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     * @Gedmo\Timestampable(on="create")
+     */
+    private $created;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     * @Gedmo\Timestampable(on="update")
+     */
+    private $updated;
 
     public function __construct()
     {
@@ -247,6 +263,32 @@ class Sortie
         return $this;
     }
 
-    
+    public function __toString(){
+        return $this->nom;
+    }
+
+    public function getCreated(): ?\DateTimeInterface
+    {
+        return $this->created;
+    }
+
+    public function setCreated(?\DateTimeInterface $created): self
+    {
+        $this->created = $created;
+
+        return $this;
+    }
+
+    public function getUpdated(): ?\DateTimeInterface
+    {
+        return $this->updated;
+    }
+
+    public function setUpdated(?\DateTimeInterface $updated): self
+    {
+        $this->updated = $updated;
+
+        return $this;
+    }
 
 }

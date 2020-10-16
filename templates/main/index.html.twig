@@ -1,10 +1,36 @@
 {% extends 'base.html.twig' %}
+{% form_theme form 'form/bootstrap_4_horizontal_layout.html.twig' %}
+
 
 {% block title %}Sortir.com{% endblock %}
 {% block titre %}Bienvenue !{% endblock %}
 
 {% block body %}
-    <h2>Liste des sorties</h2>
+    {{ form_start(form, {attr: {class: 'filter js-filter-form'}}) }}
+<div class="formRecherche">
+    <div class="spinner-border js-loading" role="status" aria-hidden="true" style="display: none">
+        <span class="sr-only">Loading...</span>
+    </div>
+    <div class="row">
+        <div class="col-5">
+            <h3>Filtrer les sorties</h3>
+            {{ form_row(form.campus) }}
+            {{ form_row(form.q) }}
+            <div class="row">
+                <div class="col-6">{{ form_row(form.dateMin) }}</div>
+                <div class="col-6">{{ form_row(form.dateMax) }}</div>
+            </div>
+        </div>
+        <div class="col-5 align-bottom">
+            {{ form_row(form.organisateur) }}
+            {{ form_row(form.inscrit) }}
+            {{ form_row(form.nonInscrit) }}
+            {{ form_row(form.fini) }}
+        </div>
+        <button class="btn btn-primary col-1">rechercher</button>
+        {{ form_end(form) }}
+    </div>
+</div>
     <div class="row justify-content-center tableFixHead">
         <table class="table table-striped table-bordered table-sm " cellspacing="0"
                width="100%">

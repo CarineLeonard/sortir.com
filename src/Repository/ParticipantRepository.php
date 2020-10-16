@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Participant;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\FetchMode;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -18,6 +19,7 @@ class ParticipantRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Participant::class);
     }
+
 
     // /**
     //  * @return Participant[] Returns an array of Participant objects

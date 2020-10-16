@@ -31,7 +31,7 @@ class Ville
     private $codePostal;
 
     /**
-     * @ORM\OneToMany(targetEntity=Lieu::class, mappedBy="ville")
+     * @ORM\OneToMany(targetEntity=Lieu::class, mappedBy="ville", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false, name="id_lieu", referencedColumnName="id_lieu")
      */
     private $lieux;
