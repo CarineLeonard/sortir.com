@@ -3,31 +3,46 @@
 
 
 {% block title %}Sortir.com{% endblock %}
-{% block titre %}Bienvenue !{% endblock %}
+{% block titre %}{% endblock %}
 
 {% block body %}
+    <div class="text-right">
+        <h5>Date du jour : {{ date | date('d/m/Y') }}</h5>
+        <h5>Participant : {{ app.user.pseudo }}</h5>
+    </div>
     {{ form_start(form, {attr: {class: 'filter js-filter-form'}}) }}
 <div class="formRecherche">
     <div class="spinner-border js-loading" role="status" aria-hidden="true" style="display: none">
         <span class="sr-only">Loading...</span>
     </div>
-    <div class="row">
-        <div class="col-5">
+    <div class="row align-content-start">
+        <div class="col-7">
             <h3>Filtrer les sorties</h3>
-            {{ form_row(form.campus) }}
-            {{ form_row(form.q) }}
-            <div class="row">
+            {{ form_errors(form.campus) }}
+            <div class="form-group row">
+                <div class="col-8">{{ form_label(form.campus) }}</div>
+                <div class="col-4">{{ form_widget(form.campus) }}</div>
+            </div>
+            {{ form_errors(form.q) }}
+            <div class="form-group row">
+                <div class="col-8">{{ form_label(form.q) }}</div>
+                <div class="col-4">{{ form_widget(form.q) }}</div>
+            </div>
+            <div class="form-group row">
                 <div class="col-6">{{ form_row(form.dateMin) }}</div>
                 <div class="col-6">{{ form_row(form.dateMax) }}</div>
             </div>
         </div>
-        <div class="col-5 align-bottom">
+        <div class="col-4 align-bottom">
             {{ form_row(form.organisateur) }}
             {{ form_row(form.inscrit) }}
             {{ form_row(form.nonInscrit) }}
             {{ form_row(form.fini) }}
         </div>
-        <button class="btn btn-primary col-1">rechercher</button>
+        <div class="col-1">
+            <button class="btn btn-primary btn-lg ">rechercher</button>
+        </div>
+
         {{ form_end(form) }}
     </div>
 </div>
@@ -65,26 +80,26 @@
                     <td>
                         {% set myVal = false %}
                         {#  si on est l'organisateur de la sortie #}
-                        {% if app.user.username == sortie.organisateur.username %}
+                        {% if app.user.username == sortie.organisateur.mail or app.user.username == sortie.organisateur.pseudo %}
                             {% if sortie.etat.libelle == 'créée' %}
                                 <a href="{{ path ('sortie_modifier') }}">Modifier</a> - Publier
                             {% elseif sortie.etat.libelle == 'ouverte' or sortie.etat.libelle == 'clôturée' %}
-                                <a href="{{ path ('sortie_afficher') }}">Afficher</a> - <a href="{{ path ('sortie_annuler') }}">Annuler</a>
+                                <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a> - <a href="{{ path ('sortie_annuler') }}">Annuler</a>
                             {% else %}
-                                <a href="{{ path ('sortie_afficher') }}">Afficher</a>
+                                <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a>
                             {% endif %}
                             {% set myVal = true %}
                         {% endif %}
 
                         {% for participant in sortie.participants %}
                             {#  si on est inscrit à la sortie #}
-                            {% if app.user.username == participant.username %}
+                            {% if app.user.username == participant.mail or app.user.username == participant.pseudo %}
                                 {% if sortie.etat.libelle == 'ouverte' or sortie.etat.libelle == 'clôturée' %}
-                                    <a href="{{ path ('sortie_afficher') }}">Afficher</a> - Se désister
+                                    <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a> - Se désister
                                 {% elseif sortie.etat.libelle == 'créée' %}
                                     <p></p>
                                 {% else %}
-                                    <a href="{{ path ('sortie_afficher') }}">Afficher</a>
+                                    <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a>
                                 {% endif %}
                             {% set myVal = true %}
                             {% endif %}
@@ -92,11 +107,11 @@
                             {#  autrement : pas orga, pas inscrit #}
                             {% if myVal == false %}
                                 {% if sortie.etat.libelle == 'ouverte' %}
-                                    <a href="{{ path ('sortie_afficher') }}">Afficher</a> - S'inscrire'
+                                    <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a> - S'inscrire'
                                 {% elseif sortie.etat.libelle == 'créée' %}
                                     <p></p>
                                 {% else %}
-                                    <a href="{{ path ('sortie_afficher') }}">Afficher</a>
+                                    <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a>
                                 {% endif %}
                             {% endif %}
 

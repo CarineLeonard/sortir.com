@@ -92,13 +92,17 @@ class SortieController extends AbstractController
     }
 
     /**
-     * @Route("/afficher", name="afficher")
+     * @Route("/afficher/{id}", name="afficher", requirements={"id"="\d+"}, methods={"GET"})
      */
-    public function afficher()
+    public function afficher($id, Request $request)
     {
+
+        $sortieRepo = $this->getDoctrine()->getRepository(Sortie::class) ;
+        $sortie = $sortieRepo -> find($id);
 
         return $this->render('sortie/afficher.html.twig', [
             'controller_name' => 'SortieController',
+            'sortie' => $sortie,
         ]);
     }
 

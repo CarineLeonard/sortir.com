@@ -9,18 +9,19 @@ use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class MainController extends AbstractController
 {
     /**
      * @Route("/", name="main_index")
      */
-    public function index(Request $request, SortieRepository $sortiesRepo)
+    public function index(Request $request, SortieRepository $sortiesRepo, UserInterface $user)
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
         if ('ROLE_USER') {
 
-            $user = $this->getUser();
+            $date = new \DateTime();
             $data = new SearchData();
             $data->page = $request->get('page', 1);
             $form = $this->createForm(RechercheSortieType::class, $data);
@@ -28,6 +29,7 @@ class MainController extends AbstractController
             $sorties = $sortiesRepo->findSearch($data, $user);
             return $this->render('main/index.html.twig', [
                 'sorties' => $sorties,
+                'date' => $date,
                 'form' => $form->createView()
             ]);
 

@@ -48,13 +48,13 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
     public function getCredentials(Request $request)
     {
         $credentials = [
-            'mail' => $request->request->get('mail'),
+            'username' => $request->request->get('username'),
             'password' => $request->request->get('password'),
             'csrf_token' => $request->request->get('_csrf_token'),
         ];
         $request->getSession()->set(
             Security::LAST_USERNAME,
-            $credentials['mail']
+            $credentials['username']
         );
 
         return $credentials;
@@ -67,11 +67,22 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
             throw new InvalidCsrfTokenException();
         }
 
-        $user = $this->entityManager->getRepository(Participant::class)->findOneBy(['mail' => $credentials['mail']]);
+        //$user = $this->entityManager->getRepository(Participant::class)
+         //   ->findOneBy(['mail' => $credentials['mail']]);
+
+        // possible via une API si besoind e token
+        $user = $this->entityManager->getRepository(Participant::class)
+            ->createQueryBuilder('u')
+            ->where('u.pseudo = :pseudo OR u.mail = :mail')
+            ->andWhere('u.actif = 1')
+            ->setParameter('mail', $credentials['username'])
+            ->setParameter('pseudo', $credentials['username'])
+            ->getQuery()
+            ->getOneOrNullResult();
 
         if (!$user) {
-            // fail authentication with a custom error
-            throw new CustomUserMessageAuthenticationException('Mail could not be found.');
+            // fail authentication with a custom error : ! à la sécurité si on dit id invalidae : ça donne des infos
+            throw new CustomUserMessageAuthenticationException('Invalid credentials.');
         }
 
         return $user;
