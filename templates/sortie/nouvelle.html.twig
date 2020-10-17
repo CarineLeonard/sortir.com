@@ -32,20 +32,20 @@
                 </div>
             </div>
             <div class="form-group">
-                <label for="lieu_rue">Rue</label>
-                <div id="lieu_rue" class="form-control-plaintext text-dark">&nbsp;</div>
+                <label for="rue">Rue</label>
+                <div id="rue" class="form-control-plaintext text-dark">&nbsp;</div>
             </div>
             <div class="form-group">
-                <label for="lieu_code_postal">Code postal</label>
-                <div id="lieu_code_postal" class="form-control-plaintext text-dark">&nbsp;</div>
+                <label for="code_postal">Code postal</label>
+                <div id="code_postal" class="form-control-plaintext text-dark">&nbsp;</div>
             </div>
             <div class="form-group">
-                <label for="lieu_latitude">Latitude</label>
-                <div id="lieu_latitude" class="form-control-plaintext text-dark">&nbsp;</div>
+                <label for="latitude">Latitude</label>
+                <div id="latitude" class="form-control-plaintext text-dark">&nbsp;</div>
             </div>
             <div class="form-group">
-                <label for="lieu_longitude">Longitude</label>
-                <div id="lieu_longitude" class="form-control-plaintext text-dark">&nbsp;</div>
+                <label for="longitude">Longitude</label>
+                <div id="longitude" class="form-control-plaintext text-dark">&nbsp;</div>
             </div>
         </div>
     </div>
@@ -54,7 +54,6 @@
         <button type="submit" class="btn btn-primary">Publier la sortie</button>
         <button type="submit" class="btn btn-primary">Annuler</button>
     </div>
-
     {{ form_end(sortieForm) }}
 
     <div class="modal fade" id="lieuModal" tabindex="-1" aria-labelledby="lieuModalLabel" aria-hidden="true">
@@ -66,14 +65,8 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    {{ form_start(lieuForm) }}
-                    {{ form_widget(lieuForm) }}
-                    {{ form_end(lieuForm) }}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-primary">Sauvegarder</button>
+                <div id="lieuForm">
+                    {% include 'lieu/nouveau.html.twig' %}
                 </div>
             </div>
         </div>
@@ -86,74 +79,116 @@
     <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
     <script>
         let $ville = $('#sortie_ville');
-        $lieu = $('#sortie_lieu');
-        $ville.change(function() {
-            $('#sortie_nouveauLieu_ville').val($ville.val());
-            let $url = Routing.generate('api_ville_get_lieu', {id: $ville.val()});
-            $.ajax({
-                url : $url,
-                type: 'GET',
-                success: function(data) {
-                    if (data.length > 0) {
-                        $lieu.prop('disabled', false);
-                        $lieu.html('<option value="">Sélectionnez un lieu</option>');
-                        for (let lieu in data) {
-                            $lieu.append('<option value="'+ data[lieu].id +'">'+ data[lieu].nom +'</option>')
-                        }
-                    } else {
-                        $lieu.html('<option value="">Aucun lieu</option>');
-                        $lieu.prop('disabled', true);
-                    }
-                }
-            });
-        });
-        $lieu.change(function() {
-            let $url = Routing.generate('api_lieu_get', {id: $lieu.val()});
-            $.ajax({
-                url : $url,
-                type: 'GET',
-                success: function(data) {
-                    if (data != undefined) {
-                        $('#lieu_rue').html(data.nom);
-                        $('#lieu_code_postal').html(data.ville.codePostal);
-                        $('#lieu_latitude').html(data.latitude);
-                        $('#lieu_longitude').html(data.longitude);
-                    } else {
+        let $lieuVille = $('#lieu_ville');
+        let $lieu = $('#sortie_lieu');
+        let $lieuModal = $('#lieuModal');
+        let $lieuForm = $('#lieuForm');
+        let $nouveauLieuSubmit = $('#submit_lieu');
 
+        $nouveauLieuSubmit.on('click', submitLieuForm);
+
+        $lieuVille.change(function() {
+            $ville.val($lieuVille.val());
+        });
+
+        $ville.change(function() {
+            let value = $ville.val();
+            if (value !== undefined && value !== '') {
+                $lieuVille.val(value);
+                let $url = Routing.generate('api_ville_get_lieu', {id: value});
+                $.ajax({
+                    url : $url,
+                    type: 'GET',
+                    success: function(data) {
+                        if (data.length > 0) {
+                            $lieu.prop('disabled', false);
+                            $lieu.html('<option value="">Sélectionnez un lieu</option>');
+                            for (let lieu in data) {
+                                $lieu.append('<option value="'+ data[lieu].id +'">'+ data[lieu].nom +'</option>')
+                            }
+                        } else {
+                            $lieu.html('<option value="">Aucun lieu</option>');
+                            $lieu.prop('disabled', true);
+                        }
+                    }
+                });
+            } else {
+                $lieu.html('<option value="">Aucun lieu</option>');
+                $lieu.prop('disabled', true);
+            }
+            $lieu.val('');
+            $lieu.change();
+        });
+
+        $lieu.change(function() {
+            let value = $lieu.val();
+            if (value !== undefined && value !== '') {
+                let $url = Routing.generate('api_lieu_get', {id: $lieu.val()});
+                $.ajax({
+                    url: $url,
+                    type: 'GET',
+                    success: function (response) {
+                        if (response.status === 'OK') {
+                            $('#rue').html(response.data.nom);
+                            $('#code_postal').html(response.data.ville.codePostal);
+                            $('#latitude').html(response.data.latitude);
+                            $('#longitude').html(response.data.longitude);
+                        } else {
+                            $('#rue').html('');
+                            $('#code_postal').html('');
+                            $('#latitude').html('');
+                            $('#longitude').html('');
+                        }
+                    },
+                    error: function () {
+                        $('#rue').html('');
+                        $('#code_postal').html('');
+                        $('#latitude').html('');
+                        $('#longitude').html('');
+                    }
+                });
+            } else {
+                $('#rue').html('');
+                $('#code_postal').html('');
+                $('#latitude').html('');
+                $('#longitude').html('');
+            }
+        });
+
+        function submitLieuForm() {
+            $ville.val($lieuVille.val());
+            let $url = Routing.generate('api_lieu_nouveau', {});
+            let data = {};
+            data['nom'] = $('#lieu_nom').val();
+            data['rue'] = $('#lieu_rue').val();
+            data['latitude'] = $('#lieu_latitude').val();
+            data['longitude'] = $('#lieu_longitude').val();
+            data['ville'] = $('#lieu_ville').val();
+            data['_token'] = $(`#lieu__token`).val();
+            $.ajax({
+                url : $url,
+                type: 'POST',
+                data: JSON.stringify(data),
+                success: function(response) {
+                    $lieuForm.html(response.data.form);
+
+                    $lieuVille = $('#lieu_ville');
+                    $lieuVille.change(function() {
+                        $ville.val($lieuVille.val());
+                    });
+                    $nouveauLieuSubmit = $('#submit_lieu');
+                    $nouveauLieuSubmit.on('click', submitLieuForm);
+
+                    if (response.status === 'OK') {
+                        $lieuModal.modal('toggle');
+                        $lieu.append('<option value="'+response.data.lieu.id+'">'+response.data.lieu.nom+'</option>');
+                        $('#sortie_lieu option[value="' + response.data.lieu.id + '"]').prop('selected', true);
+                        $lieu.change();
+                        console.log(response)
                     }
                 }
             });
-        });
-        // // When ville gets selected ...
-        // $ville.change(function() {
-        //     // ... preset the same field in nouveauLieu and ...
-        //     $('#sortie_nouveauLieu_ville').val($ville.val());
-        //     // ... retrieve the corresponding form.
-        //     let $form = $(this).closest('form');
-        //     // Simulate form data, but only include the selected ville value.
-        //     let data = {};
-        //     data[$ville.attr('name')] = $ville.val();
-        //     // Also adding datetime fields cause they cause an error
-        //     let $dateHeureDebut = $('#sortie_dateHeureDebut');
-        //     let $dateLimiteInscription = $('#sortie_dateLimiteInscription');
-        //     data[$dateHeureDebut.attr('name')] = $dateHeureDebut.val();
-        //     data[$dateLimiteInscription.attr('name')] = $dateLimiteInscription.val();
-        //     // Submit data via AJAX to the form's action path.
-        //     $.ajax({
-        //         url : $form.attr('action'),
-        //         type: $form.attr('method'),
-        //         data : data,
-        //         success: function(html) {
-        //             console.log('success');
-        //             $lieu = $('#sortie_lieu');
-        //             // Replace current position field ...
-        //             $lieu.replaceWith(
-        //                 // ... with the returned one from the AJAX response.
-        //                 $(html).find('#sortie_lieu')
-        //             );
-        //             // Position field now displays the appropriate lieux.
-        //         }
-        //     });
-        // });
+        }
+        $lieu.change();
     </script>
 {% endblock %}

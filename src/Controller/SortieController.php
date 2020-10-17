@@ -6,6 +6,7 @@ use App\Entity\Etat;
 use App\Entity\Lieu;
 use App\Entity\Participant;
 use App\Entity\Sortie;
+use App\Entity\Ville;
 use App\Form\LieuType;
 use App\Form\SortieType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -26,9 +27,16 @@ class SortieController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         $sortie = new Sortie();
-        $sortie->setDateHeureDebut(new \DateTime());
-        $sortie->setDateLimiteInscription(new \DateTime());
+        $sortie->setDateHeureDebut(\DateTime::createFromFormat('Y-m-d H:i', date('Y-m-d H:i', strtotime('+2 hours'))));
+        $sortie->setDateLimiteInscription($sortie->getDateHeureDebut());
         $sortieForm = $this->createForm(SortieType::class, $sortie);
+
+        if ($request->request->all('sortie'))
+        {
+            $villeId = $request->request->all('sortie')['ville'];
+            $ville = $this->getDoctrine()->getRepository(Ville::class)->find($villeId);
+            $sortieForm->get('ville')->setData($ville);
+        }
 
         $sortieForm->handleRequest($request);
 

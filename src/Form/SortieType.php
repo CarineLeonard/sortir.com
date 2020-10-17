@@ -9,7 +9,6 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -34,6 +33,7 @@ class SortieType extends AbstractType
             ->add('ville', EntityType::class, [
                 'class' => Ville::class,
                 'mapped' => false,
+                'placeholder' => 'Sélectionnez une ville',
                 //'data' => 'object representing the default value'
             ])
         ;
@@ -46,18 +46,12 @@ class SortieType extends AbstractType
                 'class' => Lieu::class,
                 'placeholder' => count($lieux) < 1 ? 'Aucun lieu' : 'Sélectionnez un lieu',
                 'choices' => $lieux,
-                'disabled' => count($lieux) < 1,
+//                'disabled' => count($lieux) < 1,
             ]);
         };
 
         $builder->get('ville')->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($villeModifier) {
             $ville = $event->getData();
-            dump($event);
-            $villeModifier($event->getForm()->getParent(), $ville);
-        });
-
-        $builder->get('ville')->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) use ($villeModifier) {
-            $ville = $event->getForm()->getData();
             $villeModifier($event->getForm()->getParent(), $ville);
         });
     }

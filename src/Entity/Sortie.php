@@ -30,6 +30,7 @@ class Sortie
     /**
      * @ORM\Column(type="datetime")
      * @Assert\NotBlank(message="La date de début ne doit pas être vide !")
+     * @Assert\GreaterThanOrEqual(propertyPath="dateLimiteInscription", message="La date de début doit être postérieure ou égale à la date limite d'inscription.")
      */
     private $dateHeureDebut;
 
@@ -42,6 +43,7 @@ class Sortie
     /**
      * @ORM\Column(type="datetime")
      * @Assert\NotBlank(message="La date limite d'inscription ne doit pas être vide !")
+     * @Assert\GreaterThan("+2 hours", message="La date limite d'inscription ne peut être inférieur à l'instant présent + 2 heures.")
      */
     private $dateLimiteInscription;
 

@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\LieuRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=LieuRepository::class)
@@ -20,24 +21,38 @@ class Lieu
 
     /**
      * @ORM\Column(type="string", length=30)
+     * @Assert\NotBlank(message="Veuillez renseigner un nom !")
      * @Groups({"lieu"})
      */
     private $nom;
 
     /**
      * @ORM\Column(type="string", length=50, nullable=true)
+     * @Assert\NotBlank(message="Veuillez renseigner une rue !")
      * @Groups({"lieu"})
      */
     private $rue;
 
     /**
      * @ORM\Column(type="float", nullable=true)
+     * @Assert\NotBlank(message="Veuillez renseigner une latitude !")
+     * @Assert\Range(
+     *      min = -90,
+     *      max = 90,
+     *      notInRangeMessage = "La latitude doit être comprise entre {{ min }} et {{ max }}.",
+     * )
      * @Groups({"lieu"})
      */
     private $latitude;
 
     /**
      * @ORM\Column(type="float", nullable=true)
+     * @Assert\NotBlank(message="Veuillez renseigner une longitude !")
+     * @Assert\Range(
+     *      min = -180,
+     *      max = 180,
+     *      notInRangeMessage = "La longitude doit être comprise entre {{ min }} et {{ max }}.",
+     * )
      * @Groups({"lieu"})
      */
     private $longitude;
@@ -46,6 +61,7 @@ class Lieu
     /**
      * @ORM\ManyToOne(targetEntity=Ville::class, inversedBy="lieux", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false, name="id_ville", referencedColumnName="id_ville")
+     * @Assert\NotBlank(message="Veuillez sélectionner une ville !")
      * @Groups({"lieu"})
      */
     private $ville;
