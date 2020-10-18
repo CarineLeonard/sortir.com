@@ -87,6 +87,8 @@
 
         $nouveauLieuSubmit.on('click', submitLieuForm);
 
+        $lieuVille.prop('selectedIndex', $ville.prop('selectedIndex'));
+
         $lieuVille.change(function() {
             $ville.val($lieuVille.val());
         });
@@ -181,10 +183,14 @@
 
                     if (response.status === 'OK') {
                         $lieuModal.modal('toggle');
+                        $lieu.prop('disabled', false);
                         $lieu.append('<option value="'+response.data.lieu.id+'">'+response.data.lieu.nom+'</option>');
                         $('#sortie_lieu option[value="' + response.data.lieu.id + '"]').prop('selected', true);
                         $lieu.change();
-                        console.log(response)
+                        $('#lieu_nom').val('');
+                        $('#lieu_rue').val('');
+                        $('#lieu_latitude').val('');
+                        $('#lieu_longitude').val('');
                     }
                 }
             });
