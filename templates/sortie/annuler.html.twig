@@ -1,8 +1,47 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Annuler les sorties{% endblock %}
-{% block titre %}Annuler les sorties{% endblock %}
+{% block title %}Annuler une sortie{% endblock %}
+{% block titre %}Annuler une sortie{% endblock %}
 
 {% block body %}
-    <p>TO DO</p>
+    <div class="text-left col-sm-12">
+        <div class="form-inline justify-content-center">
+            <div class="col-lg-2 offset-lg-4 col-md-3 offset-md-3 col-sm-4 offset-sm-2 text-nowrap">Nom de la sortie</div>
+            <div class="col-sm-6">
+                <div id="nom" class="form-control-plaintext text-dark text">{{ sortie.nom }}</div>
+            </div>
+        </div>
+        <div class="form-inline justify-content-center">
+            <div class="col-lg-2 offset-lg-4 col-md-3 offset-md-3 col-sm-4 offset-sm-2 text-nowrap">Date de la sortie</div>
+            <div class="col-sm-6">
+                <div id="nom" class="form-control-plaintext text-dark">{{ sortie.dateHeureDebut | date('Y-m-d H:i') }}</div>
+            </div>
+        </div>
+        <div class="form-inline justify-content-center">
+            <div class="col-lg-2 offset-lg-4 col-md-3 offset-md-3 col-sm-4 offset-sm-2 text-nowrap">Campus</div>
+            <div class="col-sm-6">
+                <div id="nom" class="form-control-plaintext text-dark">{{ sortie.organisateur.campus }}</div>
+            </div>
+        </div>
+        <div class="form-inline justify-content-center">
+            <div class="col-lg-2 offset-lg-4 col-md-3 offset-md-3 col-sm-4 offset-sm-2 text-nowrap">Lieu</div>
+            <div class="col-sm-6">
+                <div id="nom" class="form-control-plaintext text-dark">{{ sortie.lieu.nom }} {{ sortie.lieu.rue }} {{ sortie.lieu.ville.codePostal }} {{ sortie.lieu.ville.nom }}</div>
+            </div>
+        </div>
+        {{ form_start(sortieForm) }}
+        <div class="form-inline justify-content-center d-flex align-items-start">
+            <div class="col-lg-2 offset-lg-4 col-md-3 offset-md-3 col-sm-4 offset-sm-2 text-nowrap">Motif</div>
+            <div class="col-sm-6">
+                <div id="nom" class="form-control-plaintext text-dark">
+                    {{ form_widget(sortieForm.infosSortie,{ 'attr': {'rows': '6', 'style': 'width: 100%'} }) }}
+                </div>
+            </div>
+        </div>
+        <div class="text-center">
+            <button type="submit" name="enregistrer" class="btn btn-primary">Enregistrer</button>
+            <a href="{{ path('main_index') }}" class="btn btn-primary">Annuler</a>
+        </div>
+        {{ form_end(sortieForm) }}
+    </div>
 {% endblock %}

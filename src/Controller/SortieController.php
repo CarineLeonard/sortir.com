@@ -12,6 +12,7 @@ use App\Form\SortieType;
 use App\Form\SortieUpdateType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -41,7 +42,6 @@ class SortieController extends AbstractController
 
         $enregistrer = false;
         $publier = false;
-        $etat = null;
         if ($request->request->has('enregistrer'))
         {
             $enregistrer = true;
@@ -61,6 +61,7 @@ class SortieController extends AbstractController
         if($sortieForm->isSubmitted() && $sortieForm->isValid())
         {
             $etatRepo = $this->getDoctrine()->getRepository(Etat::class);
+            $etat = null;
             if ($enregistrer)
             {
                 $etat = $etatRepo->findOneBy(['libelle' => 'créée']);
@@ -137,15 +138,55 @@ class SortieController extends AbstractController
     /**
      * @Route("/annuler/{id}", name="annuler", requirements={"id"="\d+"})
      */
-    public function annuler($id, Request $reques)
+    public function annuler($id, Request $request, EntityManagerInterface $em)
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
         $sortieRepo = $this->getDoctrine()->getRepository(Sortie::class) ;
-        $sortie = $sortieRepo -> find($id);
+        $sortie = $sortieRepo->find($id);
+        $infosSortie = $sortie->getInfosSortie();
+        $sortie->setInfosSortie('');
+
+        $sortieForm = $this->createFormBuilder($sortie)
+            ->add('infosSortie', TextareaType::class)
+            ->getForm()
+        ;
+
+        $sortieForm->handleRequest($request);
+
+        $enregistrer = false;
+        if ($request->request->has('enregistrer'))
+        {
+            $enregistrer = true;
+        }
+        if ($request->request->has('annuler'))
+        {
+            return $this->redirectToRoute('main_index', [
+            ]);
+        }
+
+        if($sortieForm->isSubmitted() && $sortieForm->isValid())
+        {
+            $etatRepo = $this->getDoctrine()->getRepository(Etat::class);
+            $etat = null;
+            if ($enregistrer)
+            {
+                $etat = $etatRepo->findOneBy(['libelle' => 'annulée']);
+            }
+            $sortie->setEtat($etat);
+            $sortie->setInfosSortie('[Motif de l\'annulation : '.$sortie->getInfosSortie()."]\n".$infosSortie);
+
+            $em->persist($sortie);
+            $em->flush();
+
+            $this->addFlash('success', 'La sortie a été annulée !');
+            return $this->redirectToRoute('main_index', [
+            ]);
+        }
 
         return $this->render('sortie/annuler.html.twig', [
             'controller_name' => 'SortieController',
             'sortie' => $sortie,
+            'sortieForm' => $sortieForm->createView(),
         ]);
     }
 

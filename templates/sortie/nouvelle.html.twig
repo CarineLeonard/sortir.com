@@ -56,7 +56,7 @@
     <div class="col">
         <button type="submit" name="enregistrer" class="btn btn-primary">Enregistrer</button>
         <button type="submit" name="publier" class="btn btn-primary">Publier la sortie</button>
-        <button type="submit" name="annuler" class="btn btn-primary">Annuler</button>
+        <a href="{{ path('main_index') }}" class="btn btn-primary">Annuler</a>
     </div>
     {{ form_end(sortieForm) }}
 
