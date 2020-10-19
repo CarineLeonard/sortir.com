@@ -43,10 +43,10 @@ class SortieRepository extends ServiceEntityRepository
             //->select('p.nom', 'p.dateHeureDebut', 'p.dateLimiteInscription', 'p.nbInscriptionsMax', 'e.libelle', 'pa.mail'
             //,'o.idParticipant', 'o.pseudo')
             ->select('p','c','o', 'pa','e')
-            ->join('p.siteOrganisateur', 'c')
-            ->join('p.organisateur',  'o')
-            ->join('p.participants', 'pa')
-            ->join('p.etat', 'e')
+            ->leftJoin('p.siteOrganisateur', 'c')
+            ->leftJoin('p.organisateur',  'o')
+            ->leftJoin('p.participants', 'pa')
+            ->leftJoin('p.etat', 'e')
             ->andWhere('p.dateHeureDebut >= (:datetime1Mois)')
             ->setParameter('datetime1Mois', $datetime1Mois);
 
