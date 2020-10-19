@@ -38,13 +38,37 @@ class SortieController extends AbstractController
             $sortieForm->get('ville')->setData($ville);
         }
 
+        $enregistrer = false;
+        $publier = false;
+        $etat = null;
+        if ($request->request->has('enregistrer'))
+        {
+            $enregistrer = true;
+        }
+        if ($request->request->has('publier'))
+        {
+            $publier = true;
+        }
+        if ($request->request->has('annuler'))
+        {
+            return $this->redirectToRoute('main_index', [
+            ]);
+        }
+
         $sortieForm->handleRequest($request);
 
         if($sortieForm->isSubmitted() && $sortieForm->isValid())
         {
             $etatRepo = $this->getDoctrine()->getRepository(Etat::class);
-            $etat = $etatRepo->findBy(['libelle' => 'créée']);
-            $sortie->setEtat($etat[0]);
+            if ($enregistrer)
+            {
+                $etat = $etatRepo->findOneBy(['libelle' => 'créée']);
+            }
+            if ($publier)
+            {
+                $etat = $etatRepo->findOneBy(['libelle' => 'ouverte']);
+            }
+            $sortie->setEtat($etat);
 
             /** @var Participant $organisateur */
             $organisateur = $this->getUser();
