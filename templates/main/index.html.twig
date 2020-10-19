@@ -87,9 +87,9 @@
                         {#  si on est l'organisateur de la sortie #}
                         {% if app.user.username == sortie.organisateur.mail or app.user.username == sortie.organisateur.pseudo %}
                             {% if sortie.etat.libelle == 'créée' %}
-                                <a href="{{ path ('sortie_modifier') }}">Modifier</a> - Publier
+                                <a href="{{ path ('sortie_modifier', {'id' : sortie.idSortie }) }}">Modifier</a> - Publier
                             {% elseif sortie.etat.libelle == 'ouverte' or sortie.etat.libelle == 'clôturée' %}
-                                <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a> - <a href="{{ path ('sortie_annuler') }}">Annuler</a>
+                                <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a> - <a href="{{ path ('sortie_annuler', {'id' : sortie.idSortie }) }}">Annuler</a>
                             {% else %}
                                 <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a>
                             {% endif %}

@@ -70,24 +70,32 @@ class SortieController extends AbstractController
     }
 
     /**
-     * @Route("/modifier", name="modifier")
+     * @Route("/modifier/{id}", name="modifier", requirements={"id"="\d+"}, methods={"GET"})
      */
-    public function modifier()
+    public function modifier($id, Request $request)
     {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        $sortieRepo = $this->getDoctrine()->getRepository(Sortie::class) ;
+        $sortie = $sortieRepo -> find($id);
 
         return $this->render('sortie/modifier.html.twig', [
             'controller_name' => 'SortieController',
+            'sortie' => $sortie,
         ]);
     }
 
     /**
-     * @Route("/annuler", name="annuler")
+     * @Route("/annuler/{id}", name="annuler", requirements={"id"="\d+"}, methods={"GET"})
      */
-    public function annuler()
+    public function annuler($id, Request $reques)
     {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        $sortieRepo = $this->getDoctrine()->getRepository(Sortie::class) ;
+        $sortie = $sortieRepo -> find($id);
 
         return $this->render('sortie/annuler.html.twig', [
             'controller_name' => 'SortieController',
+            'sortie' => $sortie,
         ]);
     }
 
@@ -96,7 +104,7 @@ class SortieController extends AbstractController
      */
     public function afficher($id, Request $request)
     {
-
+        $this->denyAccessUnlessGranted('ROLE_USER');
         $sortieRepo = $this->getDoctrine()->getRepository(Sortie::class) ;
         $sortie = $sortieRepo -> find($id);
 
