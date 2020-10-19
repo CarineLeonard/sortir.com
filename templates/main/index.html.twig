@@ -112,7 +112,7 @@
                             {#  autrement : pas orga, pas inscrit #}
                             {% if myVal == false %}
                                 {% if sortie.etat.libelle == 'ouverte' %}
-                                    <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a> - S'inscrire'
+                                    <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a> - S'inscrire
                                 {% elseif sortie.etat.libelle == 'créée' %}
                                     <p></p>
                                 {% else %}
