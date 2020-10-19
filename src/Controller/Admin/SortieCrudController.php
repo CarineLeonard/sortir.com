@@ -41,7 +41,7 @@ class SortieCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         return [
-            IdField::new('idSortie'),
+            IdField::new('idSortie')->onlyOnIndex(),
             TextField::new('nom'),
             DateTimeField::new('dateHeureDebut'),
             NumberField::new('duree'),

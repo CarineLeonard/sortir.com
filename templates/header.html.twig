@@ -8,6 +8,9 @@
             <ul class="navbar-nav">
                 {% if is_granted('ROLE_ADMIN') %}
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ path ('admin_index') }}">Admin</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ path ('admin_villes') }}">Villes</a>
                     </li>
                     <li class="nav-item">
