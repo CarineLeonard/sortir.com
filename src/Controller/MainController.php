@@ -21,7 +21,7 @@ class MainController extends AbstractController
 
             $date = new \DateTime();
             $data = new SearchData();
-            $data->page = $request->get('page', 1);
+            //$data->page = $request->get('page', 1);
             $form = $this->createForm(RechercheSortieType::class, $data);
             $form->handleRequest($request);
             $sorties = $sortiesRepo->findSearch($data, $this->getUser());
