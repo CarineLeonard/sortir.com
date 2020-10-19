@@ -4,64 +4,63 @@
 {% block titre %}Afficher une sortie{% endblock %}
 
 {% block body %}
-<div class="row">
-
-    <div class="col-6 justify-content-center text-left">
-        <div class="form-group row justify-content-start">
-            <label for="nom" class="col-6">Nom de la sortie : </label>
-            <div id="nom" class="form-control-plaintext col-6">{{ sortie.nom }}</div>
+<div class="text-left row m-0">
+    <div class="col-md-6">
+        <div class="form-row align-items-center">
+            <div class="col-sm-6">Nom de la sortie :</div>
+            <div id="nom" class="form-control-plaintext col-sm-6 text-center text-sm-left text-dark">{{ sortie.nom }}</div>
         </div>
-        <div class="form-group row justify-content-start">
-            <label for="datedebut" class="col-6">Date et heure de la sortie : </label>
-            <div id="datedebut" class="form-control-plaintext col-6">{{ sortie.dateHeureDebut | date('d/m/Y H:i') }}</div>
+        <div class="form-row align-items-center">
+            <div class="col-sm-6">Date et heure de la sortie :</div>
+            <div id="datedebut" class="form-control-plaintext col-sm-6 text-center text-sm-left text-dark">{{ sortie.dateHeureDebut | date('d/m/Y H:i') }}</div>
         </div>
-        <div class="form-group row justify-content-start">
-            <label for="datelimite" class="col-6">Date et heure de la sortie : </label>
-            <div id="datelimite" class="form-control-plaintext col-6">{{ sortie.dateLimiteInscription | date('d/m/Y')}}</div>
+        <div class="form-row align-items-center">
+            <div class="col-sm-6">Date et heure de la sortie :</div>
+            <div id="datelimite" class="form-control-plaintext col-sm-6 text-center text-sm-left text-dark">{{ sortie.dateLimiteInscription | date('d/m/Y')}}</div>
         </div>
-        <div class="form-group row justify-content-start">
-            <label for="nbPlace" class="col-6">Nombre de place : </label>
-            <div id="nbPlace" class="form-control-plaintext col-6">{{ sortie.nbInscriptionsMax }}</div>
+        <div class="form-row align-items-center">
+            <div class="col-sm-6">Nombre de place :</div>
+            <div id="nbPlace" class="form-control-plaintext col-sm-6 text-center text-sm-left text-dark">{{ sortie.nbInscriptionsMax }}</div>
         </div>
-        <div class="form-group row justify-content-start">
-            <label for="duree" class="col-6">Durée : </label>
-            <div id="duree" class="form-control-plaintext col-6">{{ sortie.duree }} minutes</div>
+        <div class="form-row align-items-center">
+            <div class="col-sm-6">Durée :</div>
+            <div id="duree" class="form-control-plaintext col-sm-6 text-center text-sm-left text-dark">{{ sortie.duree }} minutes</div>
         </div>
-        <div class="form-group row justify-content-start">
-            <label for="descr" class="col-6">Description et infos : </label>
-            <div id="descr" class="form-control-plaintext col-6">{{ sortie.infosSortie }}</div>
+        <div class="form-row d-flex align-items-start">
+            <div class="col-md-6">Description et infos :</div>
+            <div id="descr" class="form-control-plaintext col-md-6 text-dark">{{ sortie.infosSortie }}</div>
         </div>
     </div>
-    <div class=" col-offset-1 col-5 justify-content-center text-left">
-        <div class="form-group row justify-content-start">
-            <label for="campus" class="col-6">Campus : </label>
-            <div id="campus" class="form-control-plaintext col-6">{{ sortie.siteOrganisateur }}</div>
+    <div class="col-md-6">
+        <div class="form-row align-items-center">
+            <div class="col-sm-6">Campus :</div>
+            <div id="campus" class="form-control-plaintext col-sm-6 text-center text-sm-left text-dark">{{ sortie.siteOrganisateur }}</div>
         </div>
-        <div class="form-group row justify-content-start">
-            <label for="lieu" class="col-6">Lieu : </label>
-            <div id="lieu" class="form-control-plaintext col-6">{{ sortie.lieu.nom }}</div>
+        <div class="form-row align-items-center">
+            <div class="col-sm-6">Lieu :</div>
+            <div id="lieu" class="form-control-plaintext col-sm-6 text-center text-sm-left text-dark">{{ sortie.lieu.nom }}</div>
         </div>
-        <div class="form-group row justify-content-start">
-            <label for="rue" class="col-6">Rue : </label>
-            <div id="rue" class="form-control-plaintext col-6">{{ sortie.lieu.rue }}</div>
+        <div class="form-row align-items-center">
+            <div class="col-sm-6">Rue :</div>
+            <div id="rue" class="form-control-plaintext col-sm-6 text-center text-sm-left text-dark">{{ sortie.lieu.rue }}</div>
         </div>
-        <div class="form-group row justify-content-start">
-            <label for="ville" class="col-6">Ville : </label>
-            <div id="ville" class="form-control-plaintext col-6">{{ sortie.lieu.ville.__toString }}</div>
+        <div class="form-row align-items-center">
+            <div class="col-sm-6">Ville :</div>
+            <div id="ville" class="form-control-plaintext col-sm-6 text-center text-sm-left text-dark">{{ sortie.lieu.ville.__toString }}</div>
         </div>
-        <div class="form-group row justify-content-start">
-            <label for="latitude" class="col-6">Latitude : </label>
-            <div id="latitude" class="form-control-plaintext col-6">{{ sortie.lieu.latitude }}</div>
+        <div class="form-row align-items-center">
+            <div class="col-sm-6">Latitude :</div>
+            <div id="latitude" class="form-control-plaintext col-sm-6 text-center text-sm-left text-dark">{{ sortie.lieu.latitude }}</div>
         </div>
-        <div class="form-group row justify-content-start">
-            <label for="longitude" class="col-6">Longitude : </label>
-            <div id="longitude" class="form-control-plaintext col-6">{{ sortie.lieu.longitude }}</div>
+        <div class="form-row align-items-center">
+            <div class="col-sm-6">Longitude :</div>
+            <div id="longitude" class="form-control-plaintext col-sm-6 text-center text-sm-left text-dark">{{ sortie.lieu.longitude }}</div>
         </div>
     </div>
 </div>
-<div class="justify-content-start col-5">
-    <table class="table table-striped table-bordered table-sm " cellspacing="0"
-           width="100%">
+<div class="col-md-6">
+    <h5>Liste des participants inscrits :</h5>
+    <table class="table table-striped table-bordered table-sm">
         <thead>
             <tr>
                 <th>Pseudo</th>
@@ -71,7 +70,7 @@
         <tbody class="scrolltab">
         {% for participant in sortie.participants %}
             <tr class="participant">
-                <td><a href="{{ path ('participant_user', {'id' : sortie.organisateur.idParticipant }) }}">{{ participant.pseudo}}</a></td>
+                <td><a href="{{ path ('participant_user', {'id' : participant.idParticipant }) }}">{{ participant.pseudo}}</a></td>
                 <td>{{ participant.nom | upper }} {{ participant.prenom | capitalize }}</td>
             </tr>
         {% endfor %}
