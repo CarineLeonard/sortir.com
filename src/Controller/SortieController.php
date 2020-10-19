@@ -70,22 +70,42 @@ class SortieController extends AbstractController
     }
 
     /**
-     * @Route("/modifier/{id}", name="modifier", requirements={"id"="\d+"}, methods={"GET"})
+     * @Route("/modifier/{id}", name="modifier", requirements={"id"="\d+"})
      */
-    public function modifier($id, Request $request)
+    public function modifier($id, Request $request, EntityManagerInterface $em)
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
         $sortieRepo = $this->getDoctrine()->getRepository(Sortie::class) ;
         $sortie = $sortieRepo -> find($id);
 
+        $sortieForm = $this->createForm(SortieType::class, $sortie);
+        $sortieForm->handleRequest($request);
+
+        if($sortieForm->isSubmitted() && $sortieForm->isValid())
+        {
+            $em->persist($sortie);
+            $em->flush();
+
+            $this->addFlash('success', 'La sortie a été modifiée !');
+            return $this->redirectToRoute('main_index', [
+            ]);
+        }
+
+        $lieuRepo = $this->getDoctrine()->getRepository(Lieu::class) ;
+        $lieu = $lieuRepo -> find($sortie->getLieu()->getId());
+        $lieuForm = $this->createForm(LieuType::class, $lieu);
+
         return $this->render('sortie/modifier.html.twig', [
             'controller_name' => 'SortieController',
+            'sortieForm' => $sortieForm->createView(),
+            'lieuForm' => $lieuForm->createView(),
             'sortie' => $sortie,
+            'lieu' => $lieu,
         ]);
     }
 
     /**
-     * @Route("/annuler/{id}", name="annuler", requirements={"id"="\d+"}, methods={"GET"})
+     * @Route("/annuler/{id}", name="annuler", requirements={"id"="\d+"})
      */
     public function annuler($id, Request $reques)
     {
