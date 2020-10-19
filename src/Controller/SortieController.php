@@ -9,6 +9,7 @@ use App\Entity\Sortie;
 use App\Entity\Ville;
 use App\Form\LieuType;
 use App\Form\SortieType;
+use App\Form\SortieUpdateType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -101,12 +102,19 @@ class SortieController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_USER');
         $sortieRepo = $this->getDoctrine()->getRepository(Sortie::class) ;
         $sortie = $sortieRepo -> find($id);
+        $sortie->getLieu()->getVille();
+        $sortie->getLieu();
+        $lieuRepo = $this->getDoctrine()->getRepository(Lieu::class) ;
+        $lieu = $lieuRepo -> find($sortie->getLieu()->getId());
+        $lieuForm = $this->createForm(LieuType::class, $lieu);
 
-        $sortieForm = $this->createForm(SortieType::class, $sortie);
+
+        $sortieForm = $this->createForm(SortieUpdateType::class, $sortie);
         $sortieForm->handleRequest($request);
 
         if($sortieForm->isSubmitted() && $sortieForm->isValid())
         {
+            $sortie = $sortieForm->getData();
             $em->persist($sortie);
             $em->flush();
 
@@ -115,9 +123,7 @@ class SortieController extends AbstractController
             ]);
         }
 
-        $lieuRepo = $this->getDoctrine()->getRepository(Lieu::class) ;
-        $lieu = $lieuRepo -> find($sortie->getLieu()->getId());
-        $lieuForm = $this->createForm(LieuType::class, $lieu);
+
 
         return $this->render('sortie/modifier.html.twig', [
             'controller_name' => 'SortieController',
