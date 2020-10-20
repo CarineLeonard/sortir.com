@@ -299,23 +299,28 @@ class Sortie
             return;
         }
 
-        if ($this->getDateHeureDebut() <= \DateTime::createFromFormat('Y-m-d H:i', date('Y-m-d H:i', strtotime('+1 month +'.$this->getDuree().' minutes'))))
+        if ($this->getEtat() == 'clôturée'
+            && $this->getParticipants()->count() < $this->getNbinscriptionsMax()
+            && $this->getDateLimiteInscription() > new \DateTime())
         {
-            $this->setEtat($etatRepo->findOneBy(['libelle' => 'historisée']));
+            $this->setEtat($etatRepo->findOneBy(['libelle' => 'ouverte']));
+        }
+        elseif ($this->getDateLimiteInscription() <= new \DateTime()
+            || $this->getParticipants()->count() >= $this->getNbinscriptionsMax())
+        {
+            $this->setEtat($etatRepo->findOneBy(['libelle' => 'clôturée']));
+        }
+        elseif ($this->getDateHeureDebut() <= new \DateTime())
+        {
+            $this->setEtat($etatRepo->findOneBy(['libelle' => 'en cours']));
         }
         elseif ($this->getDateHeureDebut() <= \DateTime::createFromFormat('Y-m-d H:i', date('Y-m-d H:i', strtotime('+'.$this->getDuree().' minutes'))))
         {
             $this->setEtat($etatRepo->findOneBy(['libelle' => 'passée']));
         }
-        elseif ($this->getDateHeureDebut() <= \DateTime::createFromFormat('Y-m-d H:i', date('Y-m-d H:i')))
+        elseif ($this->getDateHeureDebut() <= \DateTime::createFromFormat('Y-m-d H:i', date('Y-m-d H:i', strtotime('+1 month +'.$this->getDuree().' minutes'))))
         {
-            $this->setEtat($etatRepo->findOneBy(['libelle' => 'en cours']));
-        }
-        elseif ($this->getEtat() == 'clôturée'
-            && $this->getParticipants()->count() < $this->getNbinscriptionsMax()
-            && $this->getDateHeureDebut() > \DateTime::createFromFormat('Y-m-d H:i', date('Y-m-d H:i')))
-        {
-            $this->setEtat($etatRepo->findOneBy(['libelle' => 'ouverte']));
+            $this->setEtat($etatRepo->findOneBy(['libelle' => 'historisée']));
         }
 
         $em->persist($this);
