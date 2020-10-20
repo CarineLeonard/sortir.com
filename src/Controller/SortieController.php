@@ -182,7 +182,9 @@ class SortieController extends AbstractController
         $user = $this->getUser();
 
         $etatSortie = $sortie->getEtat()->getLibelle();
-        if (($etatSortie != 'ouverte' && $etatSortie != 'clôturée') || $sortie->getDateHeureDebut() > new \DateTime() || $sortie->getOrganisateur() != $user)
+        if (($etatSortie != 'ouverte' && $etatSortie != 'clôturée')
+            || $sortie->getDateHeureDebut() < new \DateTime()
+            || $sortie->getOrganisateur() !== $user)
         {
             return $this->redirectToRoute('main_index', [
             ]);
