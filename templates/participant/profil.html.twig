@@ -7,7 +7,10 @@
 {% block body %}
     {{ form_start(participantForm) }}
 <div class="row justify-content-center">
-    <div class="col-6">
+    <div class="col-4" style="height: 100px">
+        <img src="{{ asset('uploads/images/' ~ participant.imageFilename) }}" class="img-thumbnail img-fluid" alt="Your image">
+    </div>
+    <div class="offset-1 col-6">
         {{ form_row(participantForm.pseudo) }}
         {{ form_row(participantForm.prenom) }}
         {{ form_row(participantForm.nom) }}
@@ -15,6 +18,7 @@
         {{ form_row(participantForm.mail) }}
         {{ form_row(participantForm.motPasse) }}
         {{ form_row(participantForm.campus) }}
+        {{ form_row(participantForm.image) }}
         <button type="submit" class="btn btn-primary">Enregistrer</button>
         <a class="btn btn-primary" href="{{ path ('main_index') }}">Annuler</a>
     </div>

@@ -99,6 +99,15 @@
     "doctrine/sql-formatter": {
         "version": "1.1.1"
     },
+    "easycorp/easyadmin-bundle": {
+        "version": "3.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "3.0",
+            "ref": "b131e6cbfe1b898a508987851963fff485986285"
+        }
+    },
     "friendsofsymfony/jsrouting-bundle": {
         "version": "2.3",
         "recipe": {
@@ -109,15 +118,7 @@
         },
         "files": [
             "./config/routes/fos_js_routing.yaml"
-        ]},
-    "easycorp/easyadmin-bundle": {
-        "version": "3.0",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "master",
-            "version": "3.0",
-            "ref": "b131e6cbfe1b898a508987851963fff485986285"
-        }
+        ]
     },
     "fzaninotto/faker": {
         "version": "v1.9.1"
@@ -322,6 +323,9 @@
             "ref": "fadbfe33303a76e25cb63401050439aa9b1a9c7f"
         }
     },
+    "symfony/mime": {
+        "version": "v5.1.7"
+    },
     "symfony/monolog-bridge": {
         "version": "v5.1.7"
     },
@@ -350,6 +354,9 @@
         "version": "v1.18.1"
     },
     "symfony/polyfill-intl-icu": {
+        "version": "v1.18.1"
+    },
+    "symfony/polyfill-intl-idn": {
         "version": "v1.18.1"
     },
     "symfony/polyfill-intl-normalizer": {

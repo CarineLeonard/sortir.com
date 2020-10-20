@@ -6,11 +6,15 @@ use App\Entity\Participant;
 use App\Form\ParticipantType;
 use App\Repository\CampusRepository;
 use App\Repository\ParticipantRepository;
+use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class ParticipantController extends AbstractController
 {
@@ -18,36 +22,39 @@ class ParticipantController extends AbstractController
      * @Route("/profil", name="participant_profil")
      */
     public function profil(ParticipantRepository $participantRepository, CampusRepository $campusRepo, Request $request,
-                           EntityManagerInterface $em, UserInterface $user)
+                           EntityManagerInterface $em, UserInterface $user, FileUploader $fileUploader)
     {
-        //$participant = new Participant();
-
+        /** @var Participant $user */
         $user = $this->getUser();
         $participant = $participantRepository -> findOneBy([
             'mail' => ($user->getUsername())  ]);
 
-        $participant->getNom();
-        $participant->getPrenom();
-        $participant->getPseudo();
-        $participant->getTelephone();
-        $participant->getMail();
-        $participant->getPassword();
-        $participant->getCampus();
         $this->denyAccessUnlessGranted('ROLE_USER');
         $participantForm = $this->createForm(ParticipantType::class, $participant) ;
-
 
         $participantForm->handleRequest($request);
         if ($participantForm->isSubmitted() && $participantForm->isValid()) {
 
+            /** @var UploadedFile $imageFile */
+            $imageFile = $participantForm->get('image')->getData();
             $participant = $participantForm->getData();
+
+
+            if ($imageFile) {
+
+                $imageFileName = $fileUploader->upload($imageFile);
+                $participant->setImageFilename($imageFileName);
+            }
+
+            // ... persist the $product variable or any other work
             $em->persist($participant);
             $em->flush();
             $this->addFlash('success', 'Votre profil a bien été mis à jour!');
             return $this->redirectToRoute('main_index');
         }
         return $this->render('participant/profil.html.twig', [
-            'participantForm' => $participantForm->createView()
+            'participantForm' => $participantForm->createView(),
+            'participant' => $participant,
         ]);
     }
 

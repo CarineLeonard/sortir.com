@@ -61,7 +61,7 @@ class Participant implements UserInterface
 
     /**
      * @ORM\ManyToOne(targetEntity=Campus::class, cascade={"persist"})
-     * @ORM\JoinColumn(nullable=false, name="id_campus", referencedColumnName="id_campus", onDelete="")
+     * @ORM\JoinColumn(nullable=false, name="id_campus", referencedColumnName="id_campus")
      */
     private $campus;
 
@@ -89,6 +89,11 @@ class Participant implements UserInterface
      * @Gedmo\Timestampable(on="update")
      */
     private $updated;
+
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $imageFilename;
 
     public function __construct()
     {
@@ -293,4 +298,23 @@ class Participant implements UserInterface
 
         return $this;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getImageFilename()
+    {
+        return $this->imageFilename;
+    }
+
+    /**
+     * @param mixed $imageFilename
+     */
+    public function setImageFilename($imageFilename)
+    {
+        $this->imageFilename = $imageFilename;
+        return $this;
+    }
+
+
 }
