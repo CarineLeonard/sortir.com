@@ -21,6 +21,7 @@ class Ville
 
     /**
      * @ORM\Column(type="string", length=30)
+     * @Groups({"lieu"})
      */
     private $nom;
 

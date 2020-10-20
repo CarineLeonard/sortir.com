@@ -105,21 +105,53 @@ class SortieController extends AbstractController
         $sortie = $sortieRepo -> find($id);
         $sortie->getLieu()->getVille();
         $sortie->getLieu();
+
         $lieuRepo = $this->getDoctrine()->getRepository(Lieu::class) ;
         $lieu = $lieuRepo -> find($sortie->getLieu()->getId());
+
         $lieuForm = $this->createForm(LieuType::class, $lieu);
-
-
         $sortieForm = $this->createForm(SortieUpdateType::class, $sortie);
+
+        $publier = false;
+        if ($request->request->has('publier'))
+        {
+            $publier = true;
+        }
+        if ($request->request->has('annuler'))
+        {
+            return $this->redirectToRoute('main_index', [
+            ]);
+        }
+
+
         $sortieForm->handleRequest($request);
 
         if($sortieForm->isSubmitted() && $sortieForm->isValid())
         {
-            $sortie = $sortieForm->getData();
-            $em->persist($sortie);
-            $em->flush();
+            if ($request->request->has('supprimer'))
+            {
+                $em->remove($sortie);
+                $em->flush();
 
-            $this->addFlash('success', 'La sortie a été modifiée !');
+                $this->addFlash('success', 'La sortie a été supprimée !');
+            } else {
+
+                $etat = $sortie->getEtat()->getLibelle();
+                $sortie = $sortieForm->getData();
+                $etatRepo = $this->getDoctrine()->getRepository(Etat::class);
+
+                if ($publier)
+                {
+                    $etat = $etatRepo->findOneBy(['libelle' => 'ouverte']);
+                    $sortie->setEtat($etat);
+                }
+                $em->persist($sortie);
+                $em->flush();
+
+                $this->addFlash('success', 'La sortie a été modifiée !');
+
+            }
+
             return $this->redirectToRoute('main_index', [
             ]);
         }
