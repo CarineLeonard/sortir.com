@@ -178,8 +178,11 @@ class SortieController extends AbstractController
         $sortie = $sortieRepo->find($id);
         $sortie->updateEtat($em, $this->getDoctrine()->getRepository(Etat::class));
 
+        /** @var Participant $user */
+        $user = $this->getUser();
+
         $etatSortie = $sortie->getEtat()->getLibelle();
-        if ($etatSortie != 'ouverte' && $etatSortie != 'clôturée')
+        if (($etatSortie != 'ouverte' && $etatSortie != 'clôturée') || $sortie->getDateHeureDebut() > new \DateTime() || $sortie->getOrganisateur() != $user)
         {
             return $this->redirectToRoute('main_index', [
             ]);
@@ -220,6 +223,47 @@ class SortieController extends AbstractController
     }
 
     /**
+     * @Route("/publier/{id}", name="publier", requirements={"id"="\d+"})
+     */
+    public function publier($id, EntityManagerInterface $em)
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        $sortieRepo = $this->getDoctrine()->getRepository(Sortie::class) ;
+        $sortie = $sortieRepo->find($id);
+        $sortie->updateEtat($em, $this->getDoctrine()->getRepository(Etat::class));
+
+        /** @var Participant $user */
+        $user = $this->getUser();
+
+        $isOrganisateur = $sortie->getParticipants()->contains($user);
+
+        $etatSortie = $sortie->getEtat()->getLibelle();
+        if ($etatSortie == 'créée' && $isOrganisateur)
+        {
+            $etatRepo = $this->getDoctrine()->getRepository(Etat::class);
+            $sortie->setEtat($etatRepo->findOneBy(['libelle' => 'ouverte']));
+
+            $em->persist($sortie);
+            $em->flush();
+
+            $sortie->updateEtat($em, $etatRepo);
+
+            $this->addFlash('success', 'Vous avez annulé la sortie !');
+        }
+        else if(!$isOrganisateur)
+        {
+            $this->addFlash('error', 'Vous ne pouvez pas annuler une sortie sans y être inscrit !');
+        }
+        else
+        {
+            $this->addFlash('error', 'Vous ne pouvez pas annuler une sortie'.$etatSortie.' !');
+        }
+
+        return $this->redirectToRoute('main_index', [
+        ]);
+    }
+
+    /**
      * @Route("/afficher/{id}", name="afficher", requirements={"id"="\d+"}, methods={"GET"})
      */
     public function afficher($id, EntityManagerInterface $em)
@@ -245,15 +289,15 @@ class SortieController extends AbstractController
         $sortie = $sortieRepo->find($id);
         $sortie->updateEtat($em, $this->getDoctrine()->getRepository(Etat::class));
 
-        /** @var Participant $participant */
-        $participant = $this->getUser();
+        /** @var Participant $user */
+        $user = $this->getUser();
 
-        $isParticipant = $sortie->getParticipants()->contains($participant);
+        $isParticipant = $sortie->getParticipants()->contains($user);
 
         $etatSortie = $sortie->getEtat()->getLibelle();
         if ($etatSortie == 'ouverte' && !$isParticipant)
         {
-            $sortie->addParticipants($participant);
+            $sortie->addParticipants($user);
 
             $em->persist($sortie);
             $em->flush();
@@ -285,15 +329,15 @@ class SortieController extends AbstractController
         $sortie = $sortieRepo->find($id);
         $sortie->updateEtat($em, $this->getDoctrine()->getRepository(Etat::class));
 
-        /** @var Participant $participant */
-        $participant = $this->getUser();
+        /** @var Participant $user */
+        $user = $this->getUser();
 
-        $isParticipant = $sortie->getParticipants()->contains($participant);
+        $isParticipant = $sortie->getParticipants()->contains($user);
 
         $etatSortie = $sortie->getEtat()->getLibelle();
         if (($etatSortie == 'ouverte' || $etatSortie == 'clôturée') && $isParticipant)
         {
-            $sortie->removeParticipants($participant);
+            $sortie->removeParticipants($user);
 
             $em->persist($sortie);
             $em->flush();

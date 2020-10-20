@@ -87,10 +87,13 @@
                         {#  si on est l'organisateur de la sortie #}
                         {% if app.user.username == sortie.organisateur.username %}
                             {% if sortie.etat.libelle == 'créée' %}
-                                <a href="{{ path ('sortie_modifier', {'id' : sortie.idSortie }) }}">Modifier</a> - Publier
+                                <a href="{{ path ('sortie_modifier', {'id' : sortie.idSortie }) }}">Modifier</a> -
+                                <a href="{{ path ('sortie_publier', {'id' : sortie.idSortie }) }}">Publier</a>
                             {% elseif sortie.etat.libelle == 'ouverte' or sortie.etat.libelle == 'clôturée' %}
                                 <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a> -
+                                {% if sortie.dateHeureDebut < date() %}
                                 <a href="{{ path ('sortie_annuler', {'id' : sortie.idSortie }) }}">Annuler</a>
+                                {% endif %}
                             {% else %}
                                 <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a>
                             {% endif %}
