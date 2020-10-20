@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Campus;
+use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Data\SearchData;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -13,9 +14,17 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Security\Core\Security;
 
 class RechercheSortieType extends AbstractType
 {
+    private $security;
+
+    public function __construct(Security $security)
+    {
+        $this->security = $security;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -33,7 +42,8 @@ class RechercheSortieType extends AbstractType
                 'expanded' => false,
                 'choice_label' => 'nom',
                 'multiple' => false,
-                'data' => null,
+                'data' => $this->userCampus(),
+                'placeholder' => 'Tous'
             ])
             ->add('dateMin', DateTimeType::class, [
                 'label' => 'Entre',
@@ -82,5 +92,12 @@ class RechercheSortieType extends AbstractType
     public function getBlockPrefix()
     {
         return '';
+    }
+
+    public function userCampus()
+    {
+        /** @var Participant $user */
+        $user = $this->security->getUser();
+        return $user->getCampus();
     }
 }

@@ -5,6 +5,9 @@
 {% block titre %}{% endblock %}
 
 {% block body %}
+    <div class="text-left d-block d-md-none">
+        <h3>Mes sorties :</h3>
+    </div>
     <div class="text-right d-none d-md-block">
         <h5>Date du jour : {{ date | date('d/m/Y') }}</h5>
         <h5>Participant : {{ app.user.pseudo }}</h5>
@@ -91,9 +94,9 @@
                                 <a href="{{ path ('sortie_modifier', {'id' : sortie.idSortie }) }}">Modifier</a> -
                                 <a href="{{ path ('sortie_publier', {'id' : sortie.idSortie }) }}">Publier</a>
                             {% elseif sortie.etat.libelle == 'ouverte' or sortie.etat.libelle == 'clôturée' %}
-                                <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a> -
+                                <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a>
                                 {% if sortie.dateHeureDebut < date() %}
-                                <a href="{{ path ('sortie_annuler', {'id' : sortie.idSortie }) }}">Annuler</a>
+                                     - <a href="{{ path ('sortie_annuler', {'id' : sortie.idSortie }) }}">Annuler</a>
                                 {% endif %}
                             {% else %}
                                 <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a>
@@ -119,7 +122,7 @@
                         {% if myVal == false %}
                             {% if sortie.etat.libelle == 'ouverte' %}
                                 <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a> -
-                                <a href="{{ path ('sortie_inscription', {'id' : sortie.idSortie }) }}">S'inscrire'</a>
+                                <a href="{{ path ('sortie_inscription', {'id' : sortie.idSortie }) }}">S'inscrire</a>
                             {% elseif sortie.etat.libelle == 'créée' %}
                                 <p></p>
                             {% else %}
