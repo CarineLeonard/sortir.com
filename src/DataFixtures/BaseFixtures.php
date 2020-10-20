@@ -31,7 +31,8 @@ class BaseFixtures extends Fixture
         'clôturée',
         'en cours',
         'passée',
-        'annulée'
+        'annulée',
+        'historisée'
     ];
 
     private $encoder;

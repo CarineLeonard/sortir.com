@@ -103,6 +103,7 @@ class SortieController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_USER');
         $sortieRepo = $this->getDoctrine()->getRepository(Sortie::class) ;
         $sortie = $sortieRepo -> find($id);
+        $sortie->updateEtat($em, $this->getDoctrine()->getRepository(Etat::class));
         $sortie->getLieu()->getVille();
         $sortie->getLieu();
 
@@ -175,6 +176,7 @@ class SortieController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_USER');
         $sortieRepo = $this->getDoctrine()->getRepository(Sortie::class) ;
         $sortie = $sortieRepo->find($id);
+        $sortie->updateEtat($em, $this->getDoctrine()->getRepository(Etat::class));
 
         $etatSortie = $sortie->getEtat()->getLibelle();
         if ($etatSortie != 'ouverte' && $etatSortie != 'clôturée')
@@ -220,11 +222,12 @@ class SortieController extends AbstractController
     /**
      * @Route("/afficher/{id}", name="afficher", requirements={"id"="\d+"}, methods={"GET"})
      */
-    public function afficher($id, Request $request)
+    public function afficher($id, EntityManagerInterface $em)
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
         $sortieRepo = $this->getDoctrine()->getRepository(Sortie::class) ;
         $sortie = $sortieRepo -> find($id);
+        $sortie->updateEtat($em, $this->getDoctrine()->getRepository(Etat::class));
 
         return $this->render('sortie/afficher.html.twig', [
             'controller_name' => 'SortieController',
@@ -240,6 +243,7 @@ class SortieController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_USER');
         $sortieRepo = $this->getDoctrine()->getRepository(Sortie::class) ;
         $sortie = $sortieRepo->find($id);
+        $sortie->updateEtat($em, $this->getDoctrine()->getRepository(Etat::class));
 
         /** @var Participant $participant */
         $participant = $this->getUser();
@@ -253,6 +257,8 @@ class SortieController extends AbstractController
 
             $em->persist($sortie);
             $em->flush();
+
+            $sortie->updateEtat($em, $this->getDoctrine()->getRepository(Etat::class));
 
             $this->addFlash('success', 'Vous vous êtes inscrit à une sortie !');
         }
@@ -272,11 +278,12 @@ class SortieController extends AbstractController
     /**
      * @Route("/desistement/{id}", name="desistement", requirements={"id"="\d+"})
      */
-    public function desistement($id, Request $request, EntityManagerInterface $em)
+    public function desistement($id, EntityManagerInterface $em)
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
         $sortieRepo = $this->getDoctrine()->getRepository(Sortie::class) ;
         $sortie = $sortieRepo->find($id);
+        $sortie->updateEtat($em, $this->getDoctrine()->getRepository(Etat::class));
 
         /** @var Participant $participant */
         $participant = $this->getUser();
@@ -290,6 +297,8 @@ class SortieController extends AbstractController
 
             $em->persist($sortie);
             $em->flush();
+
+            $sortie->updateEtat($em, $this->getDoctrine()->getRepository(Etat::class));
 
             $this->addFlash('success', 'Vous vous êtes désisté d\'une sortie !');
         }
