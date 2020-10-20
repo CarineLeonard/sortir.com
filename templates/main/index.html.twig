@@ -85,11 +85,12 @@
                     <td>
                         {% set myVal = false %}
                         {#  si on est l'organisateur de la sortie #}
-                        {% if app.user.username == sortie.organisateur.mail or app.user.username == sortie.organisateur.pseudo %}
+                        {% if app.user.username == sortie.organisateur.username %}
                             {% if sortie.etat.libelle == 'créée' %}
                                 <a href="{{ path ('sortie_modifier', {'id' : sortie.idSortie }) }}">Modifier</a> - Publier
                             {% elseif sortie.etat.libelle == 'ouverte' or sortie.etat.libelle == 'clôturée' %}
-                                <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a> - <a href="{{ path ('sortie_annuler', {'id' : sortie.idSortie }) }}">Annuler</a>
+                                <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a> -
+                                <a href="{{ path ('sortie_annuler', {'id' : sortie.idSortie }) }}">Annuler</a>
                             {% else %}
                                 <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a>
                             {% endif %}
@@ -98,9 +99,10 @@
 
                         {% for participant in sortie.participants %}
                             {#  si on est inscrit à la sortie #}
-                            {% if app.user.username == participant.mail or app.user.username == participant.pseudo %}
+                            {% if app.user.username == participant.username %}
                                 {% if sortie.etat.libelle == 'ouverte' or sortie.etat.libelle == 'clôturée' %}
-                                    <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a> - Se désister
+                                    <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a> -
+                                    <a href="{{ path ('sortie_desistement', {'id' : sortie.idSortie }) }}">Se désister</a>
                                 {% elseif sortie.etat.libelle == 'créée' %}
                                     <p></p>
                                 {% else %}
@@ -109,16 +111,17 @@
                             {% set myVal = true %}
                             {% endif %}
                         {% endfor %}
-                            {#  autrement : pas orga, pas inscrit #}
-                            {% if myVal == false %}
-                                {% if sortie.etat.libelle == 'ouverte' %}
-                                    <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a> - S'inscrire
-                                {% elseif sortie.etat.libelle == 'créée' %}
-                                    <p></p>
-                                {% else %}
-                                    <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a>
-                                {% endif %}
+                        {#  autrement : pas orga, pas inscrit #}
+                        {% if myVal == false %}
+                            {% if sortie.etat.libelle == 'ouverte' %}
+                                <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a> -
+                                <a href="{{ path ('sortie_inscription', {'id' : sortie.idSortie }) }}">S'inscrire'</a>
+                            {% elseif sortie.etat.libelle == 'créée' %}
+                                <p></p>
+                            {% else %}
+                                <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a>
                             {% endif %}
+                        {% endif %}
 
                     </td>
                 </tr>

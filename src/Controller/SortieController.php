@@ -175,6 +175,14 @@ class SortieController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_USER');
         $sortieRepo = $this->getDoctrine()->getRepository(Sortie::class) ;
         $sortie = $sortieRepo->find($id);
+
+        $etatSortie = $sortie->getEtat()->getLibelle();
+        if ($etatSortie != 'ouverte' && $etatSortie != 'clôturée')
+        {
+            return $this->redirectToRoute('main_index', [
+            ]);
+        }
+
         $infosSortie = $sortie->getInfosSortie();
         $sortie->setInfosSortie('');
 
@@ -185,26 +193,13 @@ class SortieController extends AbstractController
 
         $sortieForm->handleRequest($request);
 
-        $enregistrer = false;
-        if ($request->request->has('enregistrer'))
-        {
-            $enregistrer = true;
-        }
-        if ($request->request->has('annuler'))
-        {
-            return $this->redirectToRoute('main_index', [
-            ]);
-        }
-
         if($sortieForm->isSubmitted() && $sortieForm->isValid())
         {
             $etatRepo = $this->getDoctrine()->getRepository(Etat::class);
-            $etat = null;
-            if ($enregistrer)
-            {
-                $etat = $etatRepo->findOneBy(['libelle' => 'annulée']);
-            }
+
+            $etat = $etatRepo->findOneBy(['libelle' => 'annulée']);
             $sortie->setEtat($etat);
+
             $sortie->setInfosSortie('[Motif de l\'annulation : '.$sortie->getInfosSortie()."]\n".$infosSortie);
 
             $em->persist($sortie);
@@ -237,4 +232,77 @@ class SortieController extends AbstractController
         ]);
     }
 
+    /**
+     * @Route("/inscription/{id}", name="inscription", requirements={"id"="\d+"})
+     */
+    public function inscription($id, EntityManagerInterface $em)
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        $sortieRepo = $this->getDoctrine()->getRepository(Sortie::class) ;
+        $sortie = $sortieRepo->find($id);
+
+        /** @var Participant $participant */
+        $participant = $this->getUser();
+
+        $isParticipant = $sortie->getParticipants()->contains($participant);
+
+        $etatSortie = $sortie->getEtat()->getLibelle();
+        if ($etatSortie == 'ouverte' && !$isParticipant)
+        {
+            $sortie->addParticipants($participant);
+
+            $em->persist($sortie);
+            $em->flush();
+
+            $this->addFlash('success', 'Vous vous êtes inscrit à une sortie !');
+        }
+        else if($isParticipant)
+        {
+            $this->addFlash('error', 'Vous êtes déjà inscrit à cette sortie !');
+        }
+        else
+        {
+            $this->addFlash('error', 'Vous ne pouvez pas vous inscrire à une sortie'.$etatSortie.' !');
+        }
+
+        return $this->redirectToRoute('main_index', [
+        ]);
+    }
+
+    /**
+     * @Route("/desistement/{id}", name="desistement", requirements={"id"="\d+"})
+     */
+    public function desistement($id, Request $request, EntityManagerInterface $em)
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        $sortieRepo = $this->getDoctrine()->getRepository(Sortie::class) ;
+        $sortie = $sortieRepo->find($id);
+
+        /** @var Participant $participant */
+        $participant = $this->getUser();
+
+        $isParticipant = $sortie->getParticipants()->contains($participant);
+
+        $etatSortie = $sortie->getEtat()->getLibelle();
+        if (($etatSortie == 'ouverte' || $etatSortie == 'clôturée') && $isParticipant)
+        {
+            $sortie->removeParticipants($participant);
+
+            $em->persist($sortie);
+            $em->flush();
+
+            $this->addFlash('success', 'Vous vous êtes désisté d\'une sortie !');
+        }
+        else if(!$isParticipant)
+        {
+            $this->addFlash('error', 'Vous ne pouvez pas vous désister d\'une sortie sans y être inscrit !');
+        }
+        else
+        {
+            $this->addFlash('error', 'Vous ne pouvez pas vous désister d\'une sortie'.$etatSortie.' !');
+        }
+
+        return $this->redirectToRoute('main_index', [
+        ]);
+    }
 }

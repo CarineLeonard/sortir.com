@@ -1,12 +1,13 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Sortir.com{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/css/ol.css" type="text/css">
+{% endblock %}
 {% block titre %}Créer une sortie{% endblock %}
 
 {% block body %}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/css/ol.css" type="text/css">
-
-    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/build/ol.js"></script>
     {{ form_start(sortieForm) }}
     <div class="row">
         <div class="col-6">
@@ -79,6 +80,70 @@
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/build/ol.js"></script>
+    <script type="text/javascript">
+        let source = new ol.source.Vector({wrapX: false});
+
+        let vector = new ol.layer.Vector({
+            source: source,
+        });
+
+        let attribution = new ol.control.Attribution({
+            collapsible: false
+        });
+
+        let map = new ol.Map({
+            controls: ol.control.defaults({attribution: false}),
+            target: 'map',
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                }),
+                vector
+            ],
+            view: new ol.View({
+                center: ol.proj.fromLonLat([0, 0]),
+                zoom: 1
+            })
+        });
+
+        let draw; // global so we can remove it later
+        function addInteraction() {
+            draw = new ol.interaction.Draw({
+                source: source,
+                type: 'Point',
+            });
+            map.addInteraction(draw);
+        }
+        // addInteraction();
+
+        let layer;
+        function addMarker(lat, long) {
+            map.removeLayer(layer);
+            layer = new ol.layer.Vector({
+                source: new ol.source.Vector({
+                    features: [
+                        new ol.Feature({
+                            geometry: new ol.geom.Point(ol.proj.fromLonLat([long, lat]))
+                        })
+                    ]
+                })
+            });
+            map.addLayer(layer);
+            map.setView(new ol.View({
+                center: ol.proj.fromLonLat([long, lat]),
+                zoom: 10
+            }));
+        }
+
+        function resetView() {
+            map.removeLayer(layer);
+            map.setView(new ol.View({
+                center: ol.proj.fromLonLat([0, 0]),
+                zoom: 1
+            }));
+        }
+    </script>
     <script src="{{ asset('bundles/fosjsrouting/js/router.min.js') }}"></script>
     <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
     <script>
@@ -139,18 +204,13 @@
                             $('#code_postal').html(response.data.ville.codePostal);
                             $('#latitude').html(response.data.latitude);
                             $('#longitude').html(response.data.longitude);
-
-                            source.addFeature(new ol.Feature(new ol.geom.Point([response.data.longitude, response.data.latitude])));
-
-                            map.setView(new ol.View({
-                                center: ol.proj.fromLonLat([response.data.longitude, response.data.latitude,]),
-                                zoom: 10
-                            }));
+                            addMarker(response.data.latitude, response.data.longitude);
                         } else {
                             $('#rue').html('');
                             $('#code_postal').html('');
                             $('#latitude').html('');
                             $('#longitude').html('');
+                            resetView()
                         }
                     },
                     error: function () {
@@ -158,6 +218,7 @@
                         $('#code_postal').html('');
                         $('#latitude').html('');
                         $('#longitude').html('');
+                        resetView()
                     }
                 });
             } else {
@@ -165,6 +226,7 @@
                 $('#code_postal').html('');
                 $('#latitude').html('');
                 $('#longitude').html('');
+                resetView()
             }
         });
 
@@ -207,37 +269,5 @@
             });
         }
         $lieu.change();
-    </script>
-    <script type="text/javascript">
-        let source = new ol.source.Vector({wrapX: false});
-
-        let vector = new ol.layer.Vector({
-            source: source,
-        });
-
-        let map = new ol.Map({
-            target: 'map',
-            layers: [
-                new ol.layer.Tile({
-                    source: new ol.source.OSM()
-                }),
-                vector
-            ],
-            view: new ol.View({
-                center: ol.proj.fromLonLat([0, 0]),
-                zoom: 1
-            })
-        });
-
-        let draw; // global so we can remove it later
-        function addInteraction() {
-            draw = new ol.interaction.Draw({
-                source: source,
-                coordinates:[6.6339863,46.5193823],
-                type: 'Point',
-            });
-            map.addInteraction(draw);
-        }
-        // addInteraction();
     </script>
 {% endblock %}
