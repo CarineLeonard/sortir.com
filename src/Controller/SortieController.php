@@ -10,6 +10,7 @@ use App\Entity\Ville;
 use App\Form\LieuType;
 use App\Form\SortieType;
 use App\Form\SortieUpdateType;
+use App\Service\EtatsSortieService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -96,6 +97,23 @@ class SortieController extends AbstractController
     }
 
     /**
+     * @Route("/afficher/{id}", name="afficher", requirements={"id"="\d+"}, methods={"GET"})
+     */
+    public function afficher($id, EntityManagerInterface $em)
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        $sortieRepo = $this->getDoctrine()->getRepository(Sortie::class) ;
+        $sortie = $sortieRepo -> find($id);
+        $etatsSortieService = new EtatsSortieService($em);
+        $etatsSortieService->updateEtat($sortie);
+
+        return $this->render('sortie/afficher.html.twig', [
+            'controller_name' => 'SortieController',
+            'sortie' => $sortie,
+        ]);
+    }
+
+    /**
      * @Route("/modifier/{id}", name="modifier", requirements={"id"="\d+"})
      */
     public function modifier($id, Request $request, EntityManagerInterface $em)
@@ -103,7 +121,8 @@ class SortieController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_USER');
         $sortieRepo = $this->getDoctrine()->getRepository(Sortie::class) ;
         $sortie = $sortieRepo -> find($id);
-        $sortie->updateEtat($em, $this->getDoctrine()->getRepository(Etat::class));
+        $etatsSortieService = new EtatsSortieService($em);
+        $etatsSortieService->updateEtat($sortie);
         $sortie->getLieu()->getVille();
         $sortie->getLieu();
 
@@ -176,18 +195,20 @@ class SortieController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_USER');
         $sortieRepo = $this->getDoctrine()->getRepository(Sortie::class) ;
         $sortie = $sortieRepo->find($id);
-        $sortie->updateEtat($em, $this->getDoctrine()->getRepository(Etat::class));
+        $etatsSortieService = new EtatsSortieService($em);
+        $etatsSortieService->updateEtat($sortie);
 
         /** @var Participant $user */
         $user = $this->getUser();
 
         $etatSortie = $sortie->getEtat()->getLibelle();
+
         if (($etatSortie != 'ouverte' && $etatSortie != 'clôturée')
             || $sortie->getDateHeureDebut() < new \DateTime()
-            || $sortie->getOrganisateur() !== $user)
+            || ($sortie->getOrganisateur() !== $user && !in_array('ROLE_ADMIN', $user->getRoles())))
         {
-            return $this->redirectToRoute('main_index', [
-            ]);
+            $this->addFlash('danger', 'Vous ne pouvez pas annuler cette sortie !');
+            return $this->redirect($request->headers->get('referer'));
         }
 
         $infosSortie = $sortie->getInfosSortie();
@@ -213,8 +234,7 @@ class SortieController extends AbstractController
             $em->flush();
 
             $this->addFlash('success', 'La sortie a été annulée !');
-            return $this->redirectToRoute('main_index', [
-            ]);
+            return $this->redirectToRoute('main_index', []);
         }
 
         return $this->render('sortie/annuler.html.twig', [
@@ -227,17 +247,18 @@ class SortieController extends AbstractController
     /**
      * @Route("/publier/{id}", name="publier", requirements={"id"="\d+"})
      */
-    public function publier($id, EntityManagerInterface $em)
+    public function publier($id, EntityManagerInterface $em, Request $request)
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
         $sortieRepo = $this->getDoctrine()->getRepository(Sortie::class) ;
         $sortie = $sortieRepo->find($id);
-        $sortie->updateEtat($em, $this->getDoctrine()->getRepository(Etat::class));
+        $etatsSortieService = new EtatsSortieService($em);
+        $etatsSortieService->updateEtat($sortie);
 
         /** @var Participant $user */
         $user = $this->getUser();
 
-        $isOrganisateur = $sortie->getParticipants()->contains($user);
+        $isOrganisateur = $sortie->getOrganisateur() === $user;
 
         $etatSortie = $sortie->getEtat()->getLibelle();
         if ($etatSortie == 'créée' && $isOrganisateur)
@@ -248,48 +269,32 @@ class SortieController extends AbstractController
             $em->persist($sortie);
             $em->flush();
 
-            $sortie->updateEtat($em, $etatRepo);
+            $etatsSortieService->updateEtat($sortie);
 
-            $this->addFlash('success', 'Vous avez annulé la sortie !');
+            $this->addFlash('success', 'Vous avez publié la sortie !');
         }
         else if(!$isOrganisateur)
         {
-            $this->addFlash('error', 'Vous ne pouvez pas annuler une sortie sans y être inscrit !');
+            $this->addFlash('danger', 'Vous ne pouvez pas publier une sortie sans en être l\'organisateur !');
         }
         else
         {
-            $this->addFlash('error', 'Vous ne pouvez pas annuler une sortie'.$etatSortie.' !');
+            $this->addFlash('danger', 'Vous ne pouvez pas publier une sortie'.$etatSortie.' !');
         }
 
-        return $this->redirectToRoute('main_index', [
-        ]);
-    }
-
-    /**
-     * @Route("/afficher/{id}", name="afficher", requirements={"id"="\d+"}, methods={"GET"})
-     */
-    public function afficher($id, EntityManagerInterface $em)
-    {
-        $this->denyAccessUnlessGranted('ROLE_USER');
-        $sortieRepo = $this->getDoctrine()->getRepository(Sortie::class) ;
-        $sortie = $sortieRepo -> find($id);
-        $sortie->updateEtat($em, $this->getDoctrine()->getRepository(Etat::class));
-
-        return $this->render('sortie/afficher.html.twig', [
-            'controller_name' => 'SortieController',
-            'sortie' => $sortie,
-        ]);
+        return $this->redirect($request->headers->get('referer'));
     }
 
     /**
      * @Route("/inscription/{id}", name="inscription", requirements={"id"="\d+"})
      */
-    public function inscription($id, EntityManagerInterface $em)
+    public function inscription($id, EntityManagerInterface $em, Request $request)
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
         $sortieRepo = $this->getDoctrine()->getRepository(Sortie::class) ;
         $sortie = $sortieRepo->find($id);
-        $sortie->updateEtat($em, $this->getDoctrine()->getRepository(Etat::class));
+        $etatsSortieService = new EtatsSortieService($em);
+        $etatsSortieService->updateEtat($sortie);
 
         /** @var Participant $user */
         $user = $this->getUser();
@@ -304,32 +309,32 @@ class SortieController extends AbstractController
             $em->persist($sortie);
             $em->flush();
 
-            $sortie->updateEtat($em, $this->getDoctrine()->getRepository(Etat::class));
+            $etatsSortieService->updateEtat($sortie);
 
             $this->addFlash('success', 'Vous vous êtes inscrit à une sortie !');
         }
         else if($isParticipant)
         {
-            $this->addFlash('error', 'Vous êtes déjà inscrit à cette sortie !');
+            $this->addFlash('danger', 'Vous êtes déjà inscrit à cette sortie !');
         }
         else
         {
-            $this->addFlash('error', 'Vous ne pouvez pas vous inscrire à une sortie'.$etatSortie.' !');
+            $this->addFlash('danger', 'Vous ne pouvez pas vous inscrire à une sortie'.$etatSortie.' !');
         }
 
-        return $this->redirectToRoute('main_index', [
-        ]);
+        return $this->redirect($request->headers->get('referer'));
     }
 
     /**
      * @Route("/desistement/{id}", name="desistement", requirements={"id"="\d+"})
      */
-    public function desistement($id, EntityManagerInterface $em)
+    public function desistement($id, EntityManagerInterface $em, Request $request)
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
         $sortieRepo = $this->getDoctrine()->getRepository(Sortie::class) ;
         $sortie = $sortieRepo->find($id);
-        $sortie->updateEtat($em, $this->getDoctrine()->getRepository(Etat::class));
+        $etatsSortieService = new EtatsSortieService($em);
+        $etatsSortieService->updateEtat($sortie);
 
         /** @var Participant $user */
         $user = $this->getUser();
@@ -344,20 +349,19 @@ class SortieController extends AbstractController
             $em->persist($sortie);
             $em->flush();
 
-            $sortie->updateEtat($em, $this->getDoctrine()->getRepository(Etat::class));
+            $etatsSortieService->updateEtat($sortie);
 
             $this->addFlash('success', 'Vous vous êtes désisté d\'une sortie !');
         }
         else if(!$isParticipant)
         {
-            $this->addFlash('error', 'Vous ne pouvez pas vous désister d\'une sortie sans y être inscrit !');
+            $this->addFlash('danger', 'Vous ne pouvez pas vous désister d\'une sortie sans y être inscrit !');
         }
         else
         {
-            $this->addFlash('error', 'Vous ne pouvez pas vous désister d\'une sortie'.$etatSortie.' !');
+            $this->addFlash('danger', 'Vous ne pouvez pas vous désister d\'une sortie'.$etatSortie.' !');
         }
 
-        return $this->redirectToRoute('main_index', [
-        ]);
+        return $this->redirect($request->headers->get('referer'));
     }
 }

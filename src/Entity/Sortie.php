@@ -5,9 +5,7 @@ namespace App\Entity;
 use App\Repository\SortieRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Persistence\ObjectRepository;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 
@@ -290,40 +288,5 @@ class Sortie
         $this->updated = $updated;
 
         return $this;
-    }
-
-    public function updateEtat(EntityManagerInterface $em, $etatRepo)
-    {
-        if ($this->getEtat() == 'annulée' || $this->getEtat() == 'créée')
-        {
-            return;
-        }
-
-        if ($this->getEtat() == 'clôturée'
-            && $this->getParticipants()->count() < $this->getNbinscriptionsMax()
-            && $this->getDateLimiteInscription() > new \DateTime())
-        {
-            $this->setEtat($etatRepo->findOneBy(['libelle' => 'ouverte']));
-        }
-        elseif ($this->getDateLimiteInscription() <= new \DateTime()
-            || $this->getParticipants()->count() >= $this->getNbinscriptionsMax())
-        {
-            $this->setEtat($etatRepo->findOneBy(['libelle' => 'clôturée']));
-        }
-        elseif ($this->getDateHeureDebut() <= new \DateTime())
-        {
-            $this->setEtat($etatRepo->findOneBy(['libelle' => 'en cours']));
-        }
-        elseif ($this->getDateHeureDebut() <= \DateTime::createFromFormat('Y-m-d H:i', date('Y-m-d H:i', strtotime('+'.$this->getDuree().' minutes'))))
-        {
-            $this->setEtat($etatRepo->findOneBy(['libelle' => 'passée']));
-        }
-        elseif ($this->getDateHeureDebut() <= \DateTime::createFromFormat('Y-m-d H:i', date('Y-m-d H:i', strtotime('+1 month +'.$this->getDuree().' minutes'))))
-        {
-            $this->setEtat($etatRepo->findOneBy(['libelle' => 'historisée']));
-        }
-
-        $em->persist($this);
-        $em->flush();
     }
 }
