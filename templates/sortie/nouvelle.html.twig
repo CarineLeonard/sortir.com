@@ -206,26 +206,26 @@
                             $('#longitude').html(response.data.longitude);
                             addMarker(response.data.latitude, response.data.longitude);
                         } else {
-                            $('#rue').html('');
-                            $('#code_postal').html('');
-                            $('#latitude').html('');
-                            $('#longitude').html('');
+                            $('#rue').html('&nbsp;');
+                            $('#code_postal').html('&nbsp;');
+                            $('#latitude').html('&nbsp;');
+                            $('#longitude').html('&nbsp;');
                             resetView()
                         }
                     },
                     error: function () {
-                        $('#rue').html('');
-                        $('#code_postal').html('');
-                        $('#latitude').html('');
-                        $('#longitude').html('');
+                        $('#rue').html('&nbsp;');
+                        $('#code_postal').html('&nbsp;');
+                        $('#latitude').html('&nbsp;');
+                        $('#longitude').html('&nbsp;');
                         resetView()
                     }
                 });
             } else {
-                $('#rue').html('');
-                $('#code_postal').html('');
-                $('#latitude').html('');
-                $('#longitude').html('');
+                $('#rue').html('&nbsp;');
+                $('#code_postal').html('&nbsp;');
+                $('#latitude').html('&nbsp;');
+                $('#longitude').html('&nbsp;');
                 resetView()
             }
         });
