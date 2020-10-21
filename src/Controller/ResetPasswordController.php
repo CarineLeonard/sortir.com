@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use SymfonyCasts\Bundle\ResetPassword\Controller\ResetPasswordControllerTrait;
 use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
@@ -151,10 +152,10 @@ class ResetPasswordController extends AbstractController
             // the lines below and change the redirect to 'app_forgot_password_request'.
             // Caution: This may reveal if a user is registered or not.
             //
-            // $this->addFlash('reset_password_error', sprintf(
-            //     'There was a problem handling your password reset request - %s',
-            //     $e->getReason()
-            // ));
+             $this->addFlash('danger', sprintf(
+                 'There was a problem handling your password reset request - %s',
+                 $e->getReason()
+             ));
 
             return $this->redirectToRoute('app_check_email');
         }
@@ -174,6 +175,11 @@ class ResetPasswordController extends AbstractController
 
         $mailer->send($email);
 
+        $link = '<a href="'.$this->generateUrl('app_reset_password', [
+            'token' =>$resetToken->getToken()
+            ], UrlGeneratorInterface::ABSOLUTE_URL).'">Cliquez ici pour réinitialiser votre mot de passe.</a>';
+
+        $this->addFlash('success', $link);
         return $this->redirectToRoute('app_check_email');
     }
 }
