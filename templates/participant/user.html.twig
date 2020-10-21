@@ -4,7 +4,10 @@
 {% block titre %}{{ participant.pseudo }}{% endblock %}
 
 {% block body %}
-<div>
+    <div class="col-4" style="height: 100px">
+        <img src="{{ asset('uploads/images/' ~ participant.imageFilename) }}" class="img-thumbnail img-fluid" alt="Your image">
+    </div>
+<div class="offset-1 col-6">
     <div class="form-group row justify-content-center">
         <label for="prenom" class="col-2">Prénom : </label>
         <div id="prenom" class="form-control-plaintext col-2">{{ participant.prenom }}</div>

@@ -8,6 +8,8 @@ use App\Entity\Lieu;
 use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Entity\Ville;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -74,5 +76,21 @@ class DashboardController extends AbstractDashboardController
     public function configureCrud(): Crud
     {
         return Crud::new();
+    }
+
+    public function configureActions(): Actions
+    {
+        $addCSV = Action::new('addCSV', 'Importer', 'fa fa-download')
+            ->linkToRoute('admin_addCSVFile');
+
+        parent::configureActions()
+            ->add($addCSV);
+    }
+
+    /**
+     * @Route("/admin/csv", name="admin_addCSVFile")
+     */
+    public function addCSVFile() : Response {
+        return $this->render('admin/csv.html.twig');
     }
 }
