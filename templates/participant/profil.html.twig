@@ -7,10 +7,10 @@
 {% block body %}
     {{ form_start(participantForm) }}
 <div class="row justify-content-center">
-    <div class="col-4" style="height: 100px">
-        <img src="{{ asset('uploads/images/' ~ participant.imageFilename) }}" class="img-thumbnail img-fluid" alt="Your image">
+    <div class="col-12 col-md-4">
+        <img src="{{ asset('uploads/images/' ~ participant.imageFilename) }}" class="img-thumbnail img-fluid" alt="Image de profil" style="max-height: 200px;">
     </div>
-    <div class="offset-1 col-6">
+    <div class="col-12 col-md-6">
         {{ form_row(participantForm.pseudo) }}
         {{ form_row(participantForm.prenom) }}
         {{ form_row(participantForm.nom) }}
