@@ -62,7 +62,7 @@ class Sortie
     private $infosSortie;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Participant::class, cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity=Participant::class)
      * @ORM\JoinColumn(nullable=false, name="id_participant", referencedColumnName="id_participant")
      */
     private $organisateur;
@@ -87,7 +87,7 @@ class Sortie
     private $siteOrganisateur;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Participant::class)
+     * @ORM\ManyToMany(targetEntity=Participant::class, cascade={"remove"})
      * @ORM\JoinTable(name = "sortie_participant",
      *      joinColumns = { @ORM\JoinColumn(name="id_sortie", referencedColumnName="id_sortie") },
      *      inverseJoinColumns = { @ORM\JoinColumn(name = "id_participant", referencedColumnName="id_participant") })

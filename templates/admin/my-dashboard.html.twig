@@ -1,7 +1,14 @@
-{% extends '@EasyAdmin/page/content.html.twig' %}
+{% extends '@!EasyAdmin/page/content.html.twig' %}
 
 {% block title %}EasyAdmin{% endblock %}
 
 {% block main %}
     Vous avez {{ users }} utilisateurs and {{ sorties }} sorties.
+
+    <div class="button-action">
+        <a class="btn btn-primary" href="{{ path('admin_addCSVFile') }}">
+            <i class="fa fa-download"></i>
+            Import
+        </a>
+    </div>
 {% endblock %}
