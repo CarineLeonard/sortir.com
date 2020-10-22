@@ -4,27 +4,34 @@
 {% block titre %}{{ participant.pseudo }}{% endblock %}
 
 {% block body %}
-<div class="justify-content-center offset-1 col-10 offset-md-2 col-md-8 offset-lg-3 col-lg-6">
-    <div class="form-inline align-items-center">
-        <div class="col-6 text-left">Prénom :</div>
-        <div class="form-control-plaintext col-6 text-right">{{ participant.prenom }}</div>
+<div class="row justify-content-center">
+    <div class="col-12 col-md-4">
+        {% if participant.imageFilename != null %}
+            <img src="{{ asset('uploads/images/' ~ participant.imageFilename) }}" class="img-thumbnail img-fluid" alt="Image de profil" style="max-height: 200px;">
+        {% endif %}
     </div>
-    <div class="form-inline align-items-center">
-        <div class="col-6 text-left">Nom :</div>
-        <div class="form-control-plaintext col-6 text-right">{{ participant.nom }}</div>
+    <div class="col-12 col-md-6">
+        <div class="form-inline align-items-center">
+            <div class="col-6 text-left">Prénom :</div>
+            <div class="form-control-plaintext col-6 text-right">{{ participant.prenom }}</div>
+        </div>
+        <div class="form-inline align-items-center">
+            <div class="col-6 text-left">Nom :</div>
+            <div class="form-control-plaintext col-6 text-right">{{ participant.nom }}</div>
+        </div>
+        <div class="form-inline align-items-center">
+            <div class="col-6 text-left">Téléphone :</div>
+            <div class="form-control-plaintext col-6 text-right">{{ participant.telephone }}</div>
+        </div>
+        <div class="form-inline align-items-center">
+            <div class="col-6 text-left">Email :</div>
+            <div class="form-control-plaintext col-6 text-right">{{ participant.mail }}</div>
+        </div>
+        <div class="form-inline align-items-center">
+            <div class="col-6 text-left">Prenom :</div>
+            <div class="form-control-plaintext col-6 text-right">{{ participant.campus.nom }}</div>
+        </div>
+        <button type="button" class="btn btn-primary bouton-annuler">Retour</button>
     </div>
-    <div class="form-inline align-items-center">
-        <div class="col-6 text-left">Téléphone :</div>
-        <div class="form-control-plaintext col-6 text-right">{{ participant.telephone }}</div>
-    </div>
-    <div class="form-inline align-items-center">
-        <div class="col-6 text-left">Email :</div>
-        <div class="form-control-plaintext col-6 text-right">{{ participant.mail }}</div>
-    </div>
-    <div class="form-inline align-items-center">
-        <div class="col-6 text-left">Prenom :</div>
-        <div class="form-control-plaintext col-6 text-right">{{ participant.campus.nom }}</div>
-    </div>
-    <button type="button" class="btn btn-primary bouton-annuler">Retour</button>
 </div>
 {% endblock %}
