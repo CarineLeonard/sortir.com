@@ -1,5 +1,5 @@
-idParticipant,nom,prenom,telephone,mail,motPasse,administrateur,actif,campus,sorties,pseudo,created,updated,imageFilename
-,TRUC,Moi,06 20 00 00 00,monpseudo@mail.com,passe,1,1,26,,monpseudo,,,
-,TRAPOU,Machin,06 19 00 00 00,montest1@mail.com,passe,0,1,28,,montest1,,,
-,TGUOU,Bidule,06 18 00 00 00,trucbidule@mail.com,passe,0,1,31,,trucbidule,,,
-,TRESLONG,Archibald,06 17 00 00 00,atchoum@mail.com,passe,0,1,32,,atchoum,,,
+nom,prenom,telephone,mail,motPasse,administrateur,actif,campus,pseudo
+TRUC,Moi,06 20 00 00 00,monpseudo@mail.com,passe,1,1,Rennes,monpseudo
+TRAPOU,Machin,06 19 00 00 00,montest1@mail.com,passe,0,1,Laval,montest1
+TGUOU,Bidule,06 18 00 00 00,trucbidule@mail.com,passe,0,1,Anger,trucbidule
+TRESLONG,Archibald,06 17 00 00 00,atchoum@mail.com,passe,0,1,Niort,atchoum

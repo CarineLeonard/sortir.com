@@ -1,7 +1,13 @@
 {% extends '@!EasyAdmin/page/content.html.twig' %}
+{% form_theme CsvForm 'form/bootstrap_4_horizontal_layout.html.twig' %}
 
-{% block title %}EasyAdmin{% endblock %}
+{% block title %}EasyAdmin | Upload file{% endblock %}
 
 {% block main %}
 <p>Pour le csv</p>
+    {{ form_start(CsvForm) }}
+        {{ form_row(CsvForm.csv) }}
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+        <button type="button" name="annuler" class="btn btn-primary bouton-annuler">Annuler</button>
+    {{ form_end(CsvForm) }}
 {% endblock %}

@@ -51,7 +51,7 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
             $participant->setAdministrateur($faker->boolean);
             $participant->setActif($faker->boolean);
             $participant->setCampus( $nosCampus[random_int(1, count($nosCampus)-1)]);
-            $participant->setImageFilename($faker->imageUrl($width = 640, $height = 480));
+            $participant->setImageFilename('profilDefault.jpg');
 
             $manager->persist($participant);
         }

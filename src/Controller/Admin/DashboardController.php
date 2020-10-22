@@ -3,11 +3,17 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Campus;
+use App\Entity\Csv;
 use App\Entity\Etat;
 use App\Entity\Lieu;
 use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Entity\Ville;
+use App\Form\CsvType;
+use App\Service\CSVReader;
+use App\Service\FileUploader;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -15,6 +21,9 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -78,19 +87,40 @@ class DashboardController extends AbstractDashboardController
         return Crud::new();
     }
 
-    public function configureActions(): Actions
-    {
-        $addCSV = Action::new('addCSV', 'Importer', 'fa fa-download')
-            ->linkToRoute('admin_addCSVFile');
-
-        parent::configureActions()
-            ->add($addCSV);
-    }
-
     /**
      * @Route("/admin/csv", name="admin_addCSVFile")
      */
-    public function addCSVFile() : Response {
-        return $this->render('admin/csv.html.twig');
+    public function addCSVFile(Request $request, FileUploader $fileUploader, CSVReader $reader, EntityManagerInterface $em) : Response
+    {
+
+        $csv = new Csv();
+        $CsvForm = $this->createForm(CsvType::class, $csv);
+
+        $CsvForm->handleRequest($request);
+        if ($CsvForm->isSubmitted() && $CsvForm->isValid())
+        {
+            /** @var UploadedFile $csvFile */
+            $csvFile = $CsvForm->get('csv')->getData();
+
+            if($csvFile)
+            {
+               $csvFileName = $fileUploader->upload($csvFile);
+               $csv->setCsvFileName($fileUploader->getTargetDirectory().'data/'.$csvFileName);
+            }
+            // ... persist the $csv variable or any other work : service pour parser le csv et ajouter à la bdd !
+            // ici tu met le moulinage du csv
+            try {
+                $reader->ReadCSV($csv, $em);
+                $this->addFlash('success', 'Vos contacts ont bien été ajoutés !');
+            } catch (\Exception $e) {
+                $this->addFlash('danger', 'Vos contacts n\'ont pas pu être ajoutés !');
+            }
+
+            return $this->redirectToRoute('admin_index');
+
+        }
+        return $this->render('admin/csv.html.twig', [
+            'CsvForm' => $CsvForm->createView(),
+        ]);
     }
 }
