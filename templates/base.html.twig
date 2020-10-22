@@ -14,7 +14,7 @@
         <div class="flash">
             {% for label, messages in app.flashes %}
                 {% for message in messages %}
-                    <div class="align-content-center alert alert-{{ label }} alert-dismissible">
+                    <div class="align-content-center alert alert-{{ label }} alert-dismissible fade show">
                         {{ message | raw }}
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -39,6 +39,9 @@
                     history.back();
                 }
                 $('.bouton-annuler').on('click', goBack);
+                $('main').scroll( function () {
+                    $('.alert').alert('close');
+                });
             </script>
         {% endblock %}
     </body>
