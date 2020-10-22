@@ -8,7 +8,9 @@
     {{ form_start(participantForm) }}
 <div class="row justify-content-center">
     <div class="col-12 col-md-4">
-        <img src="{{ asset('uploads/images/' ~ participant.imageFilename) }}" class="img-thumbnail img-fluid" alt="Image de profil" style="max-height: 200px;">
+        {% if participant.imageFilename != null %}
+            <img src="{{ asset('uploads/images/' ~ participant.imageFilename) }}" class="img-thumbnail img-fluid" alt="Image de profil" style="max-height: 200px;">
+        {% endif %}
     </div>
     <div class="col-12 col-md-6">
         {{ form_row(participantForm.pseudo) }}
@@ -22,7 +24,6 @@
         <button type="submit" class="btn btn-primary">Enregistrer</button>
         <button type="button" name="annuler" class="btn btn-primary bouton-annuler">Annuler</button>
     </div>
-
 
     {{ form_end(participantForm) }}
 

@@ -87,15 +87,6 @@ class DashboardController extends AbstractDashboardController
         return Crud::new();
     }
 
-    public function configureActions(): Actions
-    {
-        $addCSV = Action::new('addCSV', 'Importer', 'fa fa-download')
-            ->linkToRoute('admin_addCSVFile');
-
-        parent::configureActions()
-            ->add($addCSV);
-    }
-
     /**
      * @Route("/admin/csv", name="admin_addCSVFile")
      */
@@ -114,18 +105,18 @@ class DashboardController extends AbstractDashboardController
             if($csvFile)
             {
                $csvFileName = $fileUploader->upload($csvFile);
-               $csv->setCsvFileName($csvFileName);
+               $csv->setCsvFileName($fileUploader->getTargetDirectory().'data/'.$csvFileName);
             }
             // ... persist the $csv variable or any other work : service pour parser le csv et ajouter à la bdd !
             // ici tu met le moulinage du csv
             try {
-                $reader->ReadCSV($csvFileName, $em);
+                $reader->ReadCSV($csv, $em);
                 $this->addFlash('success', 'Vos contacts ont bien été ajoutés !');
             } catch (\Exception $e) {
-                $this->addFlash('error', 'Vos contacts n\'ont pas pu être ajoutés !');
+                $this->addFlash('danger', 'Vos contacts n\'ont pas pu être ajoutés !');
             }
 
-            // return $this->redirectToRoute('admin_index');
+            return $this->redirectToRoute('admin_index');
 
         }
         return $this->render('admin/csv.html.twig', [

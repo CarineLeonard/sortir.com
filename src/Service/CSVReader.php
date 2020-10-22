@@ -3,47 +3,41 @@
 namespace App\Service;
 
 
+use App\Entity\Campus;
 use App\Entity\Csv;
 use App\Entity\Participant;
+use App\Repository\CampusRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class CSVReader
 {
-    public function ReadCSV( $csvfileName, EntityManagerInterface $em) {
-        //dump($csvfileName);
+    public function ReadCSV( Csv  $csv, EntityManagerInterface $em) {
+        $csvfileName = $csv->getCsvFileName();
+        dump($csvfileName);
 
-        $dataArray = [];
+        $data2 = $this->csv_to_array($csvfileName, ',');
+        dump($data2);
 
-        if (($h = fopen("{$csvfileName}", "r")) !== FALSE)
-        {
-            // Each line in the file is converted into an individual array that we call $data
-            // The items of the array are comma separated
-            while (($data = fgetcsv($h, 1000, ",")) !== FALSE)
-            {
-                // Each individual array is being pushed into the nested array
-                $dataArray[] = $data;
-            }
-            // Close the file
-            fclose($h);
+        $campus = $em->getRepository(Campus::class)->findAll();
+        $newCampus = [];
+        foreach ($campus as $camp) {
+            $newCampus[$camp->getNom()]=$camp;
         }
-
-        dump($dataArray);
-
-        // $data2 = $this->csv_to_array($csvfileName, ',');
-        //dump($data2);
 
         foreach ($data2 as $ligne) {
             $participant = new Participant();
             $participant->setNom($ligne['nom']);
             $participant->setPrenom($ligne['prenom']);
-            $participant->setTelephone(['telephone']);
-            $participant->setMotPasse(['motPasse']);
-            $participant->setAdministrateur(['administrateur']);
-            $participant->setActif(['actif']);
-            $participant->setCampus(['campus']);
-            $participant->setPseudo(['pseudo']);
+            $participant->setTelephone($ligne['telephone']);
+            $participant->setMail($ligne['mail']);
+            $participant->setMotPasse($ligne['motPasse']);
+            $participant->setAdministrateur($ligne['administrateur']);
+            $participant->setActif($ligne['actif']);
+            $participant->setCampus($newCampus[$ligne['campus']]);
+            $participant->setPseudo($ligne['pseudo']);
 
             $em->persist($participant);
+            dump($participant);
         }
         $em->flush();
 
