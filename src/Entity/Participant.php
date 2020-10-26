@@ -120,7 +120,6 @@ class Participant implements UserInterface
      * @Assert\Length(
      *      max = 30,
      *      maxMessage = "Votre pseudo ne peut pas être supérieur à {{ limit }} charactères",
-     *      allowEmptyString = false
      * )
      */
     private $pseudo;

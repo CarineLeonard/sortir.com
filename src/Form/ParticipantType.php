@@ -52,7 +52,7 @@ class ParticipantType extends AbstractType
                 'required' => false,
                 'constraints' => [
                     new File([
-                        //'maxSize' => '1000M',              // bypasser moche ...
+                        'maxSize' => '2M',              // bypasser moche ...
                         'mimeTypes' => [
                             'image/jpeg',
                             'image/png',
