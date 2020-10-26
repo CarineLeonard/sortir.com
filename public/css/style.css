@@ -53,3 +53,8 @@ h1 {
 th {
     background:#eee;
 }
+
+/* OpenLayers Map */
+.ol-control button {
+    font-size: 1em !important;
+}

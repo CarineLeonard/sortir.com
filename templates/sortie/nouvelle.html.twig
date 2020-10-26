@@ -82,44 +82,37 @@
     {{ parent() }}
     <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/build/ol.js"></script>
     <script type="text/javascript">
-        let source = new ol.source.Vector({wrapX: false});
-
-        let vector = new ol.layer.Vector({
-            source: source,
-        });
-
-        let attribution = new ol.control.Attribution({
-            collapsible: false
-        });
-
         let map = new ol.Map({
-            controls: ol.control.defaults({attribution: false}),
+            controls: ol.control.defaults({attribution: false}).extend([
+                new ol.control.Attribution({
+                    collapsible: true,
+                    collapsed: true
+                })
+            ]),
             target: 'map',
             layers: [
                 new ol.layer.Tile({
                     source: new ol.source.OSM()
-                }),
-                vector
+                })
             ],
             view: new ol.View({
                 center: ol.proj.fromLonLat([0, 0]),
-                zoom: 1
+                zoom: 0
             })
         });
 
-        let draw; // global so we can remove it later
-        function addInteraction() {
-            draw = new ol.interaction.Draw({
-                source: source,
-                type: 'Point',
-            });
-            map.addInteraction(draw);
-        }
-        // addInteraction();
+        map.on('singleclick', function (event) {
+            if (map.hasFeatureAtPixel(event.pixel) === true) {
+                let coordinate = event.coordinate;
+
+                content.innerHTML = '<b>Hello world!</b><br />I am a popup.';
+                overlay.setPosition(coordinate);
+            }
+        });
 
         let layer;
-        function addMarker(lat, long) {
-            map.removeLayer(layer);
+        function addMarker(target, lat, long, dezoom = true) {
+            target.removeLayer(layer);
             layer = new ol.layer.Vector({
                 source: new ol.source.Vector({
                     features: [
@@ -129,19 +122,101 @@
                     ]
                 })
             });
-            map.addLayer(layer);
-            map.setView(new ol.View({
-                center: ol.proj.fromLonLat([long, lat]),
-                zoom: 10
-            }));
+            target.addLayer(layer);
+
+            if (Math.floor(target.getView().getZoom()) === 0 || dezoom !== true) {
+                target.getView().animate({zoom: 15});
+                target.getView().animate({center: ol.proj.fromLonLat([long, lat])});
+            } else {
+                target.getView().animate({zoom: 0}, function() {
+                    target.getView().animate({zoom: 15});
+                    target.getView().animate({center: ol.proj.fromLonLat([long, lat])});
+                });
+            }
         }
 
-        function resetView() {
-            map.removeLayer(layer);
-            map.setView(new ol.View({
-                center: ol.proj.fromLonLat([0, 0]),
-                zoom: 1
-            }));
+        function resetView(target) {
+            target.removeLayer(layer);
+            if (Math.floor(target.getView().getZoom()) !== 0) {
+                target.getView().animate({zoom: 0});
+            }
+            target.getView().animate({center: [0, 0]});
+        }
+
+        let formMap;
+        function loadFormMap() {
+            formMap = new ol.Map({
+                controls: ol.control.defaults({attribution: false}).extend([
+                    new ol.control.Attribution({
+                        collapsible: true,
+                        collapsed: true
+                    })
+                ]),
+                target: 'formMap',
+                layers: [
+                    new ol.layer.Tile({
+                        source: new ol.source.OSM()
+                    })
+                ],
+                view: new ol.View({
+                    center: ol.proj.fromLonLat([0, 0]),
+                    zoom: 0
+                })
+            });
+
+            formMap.on('singleclick', function (event) {
+                if (formMap.hasFeatureAtPixel(event.pixel) === true) {
+                    var coordinate = event.coordinate;
+
+                    content.innerHTML = '<b>Hello world!</b><br />I am a popup.';
+                    overlay.setPosition(coordinate);
+                } else {
+                    let longLat = ol.proj.toLonLat(event.coordinate);
+                    displayLocation(longLat[1], longLat[0]);
+                    addMarker(formMap, longLat[1], longLat[0], false);
+                }
+            });
+        }
+
+        $('#lieuModal').on('shown.bs.modal', function () {
+            if (formMap === undefined) {
+                loadFormMap();
+            } else {
+                formMap.updateSize();
+            }
+        })
+
+        function displayLocation(latitude, longitude, zoom = 18) {
+            $.ajax({
+                url : 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat='+latitude+'&lon='+longitude+'&zoom='+zoom,
+                type: 'GET',
+                success: function(data) {
+                    console.log(zoom);
+                    console.log(data);
+                    if (data.address) {
+                        let address = data.address;
+                        let postcode = address.postcode ? address.postcode : '';
+                        let ville = (address.hamlet || address.village || address.town || address.city || address.municipality || address.county);
+                        let rue = (address.house_number ? address.house_number + ', ' : '') + (address.road ? address.road : '')
+
+                        if (ville && postcode) {
+                            $('#lieu_rue').val(rue ? rue : '');
+                            $('#lieu_latitude').val(latitude);
+                            $('#lieu_longitude').val(longitude);
+
+                            $('#lieu_ville option[value="-1"]').remove();
+                            $('#lieu_ville').append('<option value="-1">'+ville+' (' + postcode + ')</option>');
+                            $('#lieu_ville option[value="-1"]').prop('selected', true);
+                        } else {
+                            $('#lieu_latitude').val(latitude);
+                            $('#lieu_longitude').val(longitude);
+
+                            $('#lieu_ville option[value="-1"]').remove();
+                            $('#lieu_ville option[value=""]').prop('selected', true);
+                        }
+                    }
+                }
+            });
         }
     </script>
     <script src="{{ asset('bundles/fosjsrouting/js/router.min.js') }}"></script>
@@ -204,13 +279,13 @@
                             $('#code_postal').html(response.data.ville.codePostal);
                             $('#latitude').html(response.data.latitude);
                             $('#longitude').html(response.data.longitude);
-                            addMarker(response.data.latitude, response.data.longitude);
+                            addMarker(map, response.data.latitude, response.data.longitude);
                         } else {
                             $('#rue').html('&nbsp;');
                             $('#code_postal').html('&nbsp;');
                             $('#latitude').html('&nbsp;');
                             $('#longitude').html('&nbsp;');
-                            resetView()
+                            resetView(map)
                         }
                     },
                     error: function () {
@@ -218,7 +293,7 @@
                         $('#code_postal').html('&nbsp;');
                         $('#latitude').html('&nbsp;');
                         $('#longitude').html('&nbsp;');
-                        resetView()
+                        resetView(map)
                     }
                 });
             } else {
@@ -226,7 +301,7 @@
                 $('#code_postal').html('&nbsp;');
                 $('#latitude').html('&nbsp;');
                 $('#longitude').html('&nbsp;');
-                resetView()
+                resetView(map)
             }
         });
 
@@ -253,6 +328,8 @@
                     });
                     $nouveauLieuSubmit = $('#submit_lieu');
                     $nouveauLieuSubmit.on('click', submitLieuForm);
+
+                    loadFormMap();
 
                     if (response.status === 'OK') {
                         $lieuModal.modal('toggle');
