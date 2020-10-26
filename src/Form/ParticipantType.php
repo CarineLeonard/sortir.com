@@ -4,10 +4,8 @@ namespace App\Form;
 
 use App\Entity\Campus;
 use App\Entity\Participant;
-use App\Repository\CampusRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\ChoiceList\ChoiceList;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
@@ -15,7 +13,6 @@ use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Validator\Constraints\File;
 
 class ParticipantType extends AbstractType
@@ -28,11 +25,16 @@ class ParticipantType extends AbstractType
             ->add('prenom', TextType::class)
             ->add('telephone', TextType::class)
             ->add('mail', EmailType::class)
-            ->add('motPasse', RepeatedType::class, [
+            ->add('motPasse', PasswordType::class, [
+                'required' => true,
+                'label' => 'Mot de passe actuel',
+                'mapped' => false,
+            ])
+            ->add('newPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'invalid_message' => 'The password fields must match.',
-                'required' => true,
-                'first_options'  => ['label' => 'Mot de passe'],
+                'required' => false,
+                'first_options'  => ['label' => 'Nouveau mot de passe'],
                 'second_options' => ['label' => 'Confirmation'],
             ])
             ->add('pseudo', TextType::class)
@@ -50,6 +52,7 @@ class ParticipantType extends AbstractType
                 'required' => false,
                 'constraints' => [
                     new File([
+                        //'maxSize' => '1000M',              // bypasser moche ...
                         'mimeTypes' => [
                             'image/jpeg',
                             'image/png',

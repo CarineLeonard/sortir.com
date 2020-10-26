@@ -10,6 +10,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Security\Core\Validator\Constraints as SecurityAssert;
 
 /**
  * @ORM\Entity(repositoryClass=ParticipantRepository::class)
@@ -77,12 +78,16 @@ class Participant implements UserInterface
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message="Le mot de passe ne doit pas être vide !")
+     */
+    private $motPasse;
+
+    /**
      * @Assert\Regex(
      *     pattern="/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/",
      *     match=true,
      *     message="Votre mot de passe doit contenir à minima 8 caractères, avec au moins une minuscule, une majuscule et un chiffre.")
      */
-    private $motPasse;
+    private $newPassword;
 
     /**
      * @ORM\Column(type="boolean")
@@ -357,6 +362,23 @@ class Participant implements UserInterface
         $this->imageFilename = $imageFilename;
         return $this;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getNewPassword()
+    {
+        return $this->newPassword;
+    }
+
+    /**
+     * @param mixed $newPassword
+     */
+    public function setNewPassword($newPassword): void
+    {
+        $this->newPassword = $newPassword;
+    }
+
 
 
 }
