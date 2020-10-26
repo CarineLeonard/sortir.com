@@ -10,6 +10,8 @@
     <div class="col-12 col-md-4">
         {% if participant.imageFilename != null %}
             <img src="{{ asset('uploads/images/' ~ participant.imageFilename) }}" class="img-thumbnail img-fluid" alt="Image de profil" style="max-height: 200px;">
+        {% else %}
+            <img src="{{ asset('uploads/images/avatarNeutre.png') }}" class="img-thumbnail img-fluid" alt="Image de profil" style="max-height: 200px;">
         {% endif %}
     </div>
     <div class="col-12 col-md-6">
@@ -19,6 +21,7 @@
         {{ form_row(participantForm.telephone) }}
         {{ form_row(participantForm.mail) }}
         {{ form_row(participantForm.motPasse) }}
+        {{ form_row(participantForm.newPassword) }}
         {{ form_row(participantForm.campus) }}
         {{ form_row(participantForm.image) }}
         <button type="submit" class="btn btn-primary">Enregistrer</button>

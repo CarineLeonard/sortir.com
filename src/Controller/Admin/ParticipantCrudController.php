@@ -13,6 +13,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TelephoneField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Symfony\Component\DomCrawler\Field\FileFormField;
 
 class ParticipantCrudController extends AbstractCrudController
 {
@@ -52,7 +53,8 @@ class ParticipantCrudController extends AbstractCrudController
             BooleanField::new('administrateur'),
             BooleanField::new('actif'),
             AssociationField::new('campus'),
-            // AssociationField::new('sorties'),
+            AssociationField::new('sorties'),
+            TextField::new('imageFilename')->hideOnIndex(),
         ];
     }
 

@@ -6,6 +6,7 @@ use App\Repository\VilleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=VilleRepository::class)
@@ -22,12 +23,24 @@ class Ville
     /**
      * @ORM\Column(type="string", length=30)
      * @Groups({"lieu"})
+     *      @Assert\NotBlank(message="Le nom ne doit pas être vide !")
+     *      @Assert\Length(
+     *      max = 30,
+     *      maxMessage = "Votre nom ne peut pas être supérieur à {{ limit }} charactères",
+     *      allowEmptyString = false
+     * )
      */
     private $nom;
 
     /**
      * @ORM\Column(type="string", length=10)
      * @Groups({"lieu"})
+     *      @Assert\NotBlank(message="Le code postal ne doit pas être vide !")
+     *      @Assert\Length(
+     *      max = 10,
+     *      maxMessage = "Votre code postal ne peut pas être supérieur à {{ limit }} charactères",
+     *      allowEmptyString = false
+     * )
      */
     private $codePostal;
 

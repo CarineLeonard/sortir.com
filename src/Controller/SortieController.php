@@ -107,10 +107,18 @@ class SortieController extends AbstractController
         $etatsSortieService = new EtatsSortieService($em);
         $etatsSortieService->updateEtat($sortie);
 
-        return $this->render('sortie/afficher.html.twig', [
-            'controller_name' => 'SortieController',
-            'sortie' => $sortie,
-        ]);
+        $datetime1Mois = date_modify(new \DateTime(), '-1 month');
+        if ($sortie->getDateHeureDebut() >= $datetime1Mois) {
+            return $this->render('sortie/afficher.html.twig', [
+                'controller_name' => 'SortieController',
+                'sortie' => $sortie,
+            ]);
+        } else {
+            $this->addFlash('danger', 'La sortie est trop ancienne pour être affichée !');
+            return $this->redirectToRoute('main_index', [
+            ]);
+        }
+
     }
 
     /**

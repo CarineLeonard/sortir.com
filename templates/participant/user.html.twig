@@ -8,6 +8,8 @@
     <div class="col-12 col-md-4">
         {% if participant.imageFilename != null %}
             <img src="{{ asset('uploads/images/' ~ participant.imageFilename) }}" class="img-thumbnail img-fluid" alt="Image de profil" style="max-height: 200px;">
+        {% else %}
+            <img src="{{ asset('uploads/images/avatarNeutre.png') }}" class="img-thumbnail img-fluid" alt="Image de profil" style="max-height: 200px;">
         {% endif %}
     </div>
     <div class="col-12 col-md-6">
