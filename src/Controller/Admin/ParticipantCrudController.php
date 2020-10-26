@@ -36,6 +36,7 @@ class ParticipantCrudController extends AbstractCrudController
             ->setTimezone('Europe/Paris')
             ->setNumberFormat('%.2d');
         // ->setEntityPermission('ROLE_EDITOR')
+        // set mot de passe ??
         ;
     }
 
@@ -57,5 +58,8 @@ class ParticipantCrudController extends AbstractCrudController
             TextField::new('imageFilename')->hideOnIndex(),
         ];
     }
+
+    // réécrire createEntity() et updateEntity()
+    // réécrire //deleteEntity ?
 
 }
