@@ -24,21 +24,40 @@ class CSVReader
             $newCampus[$camp->getNom()]=$camp;
         }
 
-        foreach ($data2 as $ligne) {
-            $participant = new Participant();
-            $participant->setNom($ligne['nom']);
-            $participant->setPrenom($ligne['prenom']);
-            $participant->setTelephone($ligne['telephone']);
-            $participant->setMail($ligne['mail']);
-            $participant->setMotPasse($ligne['motPasse']);
-            $participant->setAdministrateur($ligne['administrateur']);
-            $participant->setActif($ligne['actif']);
-            $participant->setCampus($newCampus[$ligne['campus']]);
-            $participant->setPseudo($ligne['pseudo']);
+        if($data2[0] == $data2[1]) {
+            foreach ($data2 as $ligne) {
+                $participant = new Participant();
+                $participant->setNom($ligne['nom']);
+                $participant->setPrenom($ligne['prenom']);
+                $participant->setTelephone($ligne['telephone']);
+                $participant->setMail($ligne['mail']);
+                $participant->setMotPasse($ligne['motPasse']);
+                $participant->setAdministrateur($ligne['administrateur']);
+                $participant->setActif($ligne['actif']);
+                $participant->setCampus($newCampus[$ligne['campus']]);
+                $participant->setPseudo($ligne['pseudo']);
 
-            $em->persist($participant);
-            dump($participant);
+                $em->persist($participant);
+                dump($participant);
+            }
+        } else {
+            foreach ($data2 as $ligne) {
+                $participant = new Participant();
+                $participant->setNom($ligne[0]);
+                $participant->setPrenom($ligne[1]);
+                $participant->setTelephone($ligne[2]);
+                $participant->setMail($ligne[3]);
+                $participant->setMotPasse($ligne[4]);
+                $participant->setAdministrateur($ligne[4]);
+                $participant->setActif($ligne[5]);
+                $participant->setCampus($newCampus[$ligne[6]]);
+                $participant->setPseudo($ligne[7]);
+
+                $em->persist($participant);
+                dump($participant);
+            }
         }
+
         $em->flush();
 
     }
@@ -54,7 +73,7 @@ class CSVReader
         {
             while (($row = fgetcsv($handle, 1000, $delimiter)) !== FALSE)
             {
-                if(!$header)
+                if(!$header)                                                            // pb si pas avec header !
                     $header = $row;
                 else
                     $data[] = array_combine($header, $row);

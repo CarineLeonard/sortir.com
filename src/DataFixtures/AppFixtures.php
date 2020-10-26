@@ -47,7 +47,7 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
             $participant->setMail(($faker->unique()->userName).'@campus-eni.fr');
             $participant->setPseudo($faker->unique()->userName);
             $participant->setTelephone($faker->mobileNumber);
-            $participant->setMotPasse($this->encoder->encodePassword($participant,'passe'));
+            $participant->setMotPasse($this->encoder->encodePassword($participant,'Passw0rd'));
             $participant->setAdministrateur($faker->boolean);
             $participant->setActif($faker->boolean);
             $participant->setCampus( $nosCampus[random_int(1, count($nosCampus)-1)]);

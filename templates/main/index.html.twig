@@ -73,7 +73,8 @@
             {% for sortie in sorties %}
                 {% if sortie.etat.libelle != 'créée' or app.user == sortie.organisateur or 'ROLE_ADMIN' in app.user.roles %}
                 <tr class="sortie">
-                    <td>{{ sortie.nom}}</td>
+                    <td class="d-md-none d-table-cell"><a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">{{ sortie.nom}}</a></td>
+                    <td class="d-none d-md-table-cell">{{ sortie.nom}}</td>
                     <td>{{ sortie.dateHeureDebut | date('d/m/Y H:i')}}</td>
                     <td class="d-md-none">{{ sortie.lieu.ville.nom }}</td>
                     <td class="d-none d-md-table-cell">{{ sortie.dateLimiteInscription |date('d/m/Y') }}</td>

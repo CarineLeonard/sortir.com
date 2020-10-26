@@ -72,7 +72,7 @@ class BaseFixtures extends Fixture
         $participant->setPrenom('name');
         $participant->setTelephone('0654321987');
         $participant->setMail('user@mail.com');
-        $participant->setMotPasse($this->encoder->encodePassword($participant,'passe'));
+        $participant->setMotPasse($this->encoder->encodePassword($participant,'Passw0rd'));
         $participant->setAdministrateur(false);
         $participant->setActif(true);
         $participant->setCampus($userCampus);
@@ -86,7 +86,7 @@ class BaseFixtures extends Fixture
         $participant->setPrenom('name');
         $participant->setTelephone('0654321987');
         $participant->setMail('admin@mail.com');
-        $participant->setMotPasse($this->encoder->encodePassword($participant,'passe'));
+        $participant->setMotPasse($this->encoder->encodePassword($participant,'Passw0rd'));
         $participant->setAdministrateur(true);
         $participant->setActif(true);
         $participant->setCampus($userCampus);

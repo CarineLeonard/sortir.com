@@ -113,10 +113,11 @@ class DashboardController extends AbstractDashboardController
                 $reader->ReadCSV($csv, $em);
                 $this->addFlash('success', 'Vos contacts ont bien été ajoutés !');
             } catch (\Exception $e) {
-                $this->addFlash('danger', 'Vos contacts n\'ont pas pu être ajoutés !');
+                $this->addFlash('danger', 'Vos contacts n\'ont pas pu être ajoutés : votre fichier doit contenir les colonnes : 
+                nom, prenom, telephone, mail, motPasse, administrateur, actif, campus, pseudo : dans cet ordre et avec en-tete');
             }
 
-            return $this->redirectToRoute('admin_index');
+            //return $this->redirectToRoute('admin_index');
 
         }
         return $this->render('admin/csv.html.twig', [

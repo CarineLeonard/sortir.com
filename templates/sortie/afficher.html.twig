@@ -70,7 +70,8 @@
         <tbody class="scrolltab">
         {% for participant in sortie.participants %}
             <tr class="participant">
-                <td><a href="{{ path ('participant_user', {'id' : participant.idParticipant }) }}">{{ participant.pseudo}}</a></td>
+                <td class="d-none d-md-table-cell"><a href="{{ path ('participant_user', {'id' : participant.idParticipant }) }}">{{ participant.pseudo}}</a></td>
+                <td class="d-md-none d-table-cell">{{ participant.pseudo}}</td>
                 <td>{{ participant.nom | upper }} {{ participant.prenom | capitalize }}</td>
             </tr>
         {% endfor %}

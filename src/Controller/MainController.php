@@ -47,7 +47,6 @@ class MainController extends AbstractController
         } else {
             return $this->render('security/login.html.twig');
         }
-
     }
 
 }

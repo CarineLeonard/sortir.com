@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ParticipantRepository::class)
@@ -26,26 +27,60 @@ class Participant implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=30)
+     * @Assert\NotBlank(message="Le nom ne doit pas être vide !")
+     * @Assert\Length(
+     *      max = 30,
+     *      maxMessage = "Votre nom ne peut pas être supérieur à {{ limit }} charactères",
+     *      allowEmptyString = false
+     * )
      */
     private $nom;
 
     /**
      * @ORM\Column(type="string", length=30)
+     * @Assert\NotBlank(message="Le prenom ne doit pas être vide !")
+     * @Assert\Length(
+     *      max = 30,
+     *      maxMessage = "Votre prenom ne peut pas être supérieur à {{ limit }} charactères",
+     *      allowEmptyString = false
+     * )
      */
     private $prenom;
 
     /**
      * @ORM\Column(type="string", length=20, nullable=true)
+     * @Assert\Length(
+     *      min = 10,
+     *      max = 20,
+     *      minMessage="Votre téléphone doit contenir au moins {{ limit }} charactères.",
+     *      maxMessage = "Votre téléphone ne peut pas être supérieur à {{ limit }} charactères",
+     *      allowEmptyString = false
+     * )
+     * @Assert\Regex (
+     *     pattern="/^(0|\+33)[1-9]([-. ]?[0-9]{2}){4}$/",
+     *     message="Votre téléphone doit être un numéro français valide, et commencer par +33 ou 0...")
      */
     private $telephone;
 
     /**
      * @ORM\Column(type="string", length=50, unique=true)
+     * @Assert\NotBlank(message="Le mail ne doit pas être vide !")
+     * @Assert\Email(message = "L'email '{{ value }}' n'est pas un email valide.")
+     * @Assert\Length(
+     *      max = 50,
+     *      maxMessage = "Votre email ne peut pas être supérieur à {{ limit }} charactères",
+     *      allowEmptyString = false
+     * )
      */
     private $mail;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Le mot de passe ne doit pas être vide !")
+     * @Assert\Regex(
+     *     pattern="/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/",
+     *     match=true,
+     *     message="Votre mot de passe doit contenir à minima 8 caractères, avec au moins une minuscule, une majuscule et un chiffre.")
      */
     private $motPasse;
 
@@ -62,6 +97,7 @@ class Participant implements UserInterface
     /**
      * @ORM\ManyToOne(targetEntity=Campus::class, cascade={"persist"})
      * @ORM\JoinColumn(nullable=false, name="id_campus", referencedColumnName="id_campus")
+     * @Assert\NotBlank(message="Le campus ne doit pas être vide !")
      */
     private $campus;
 
@@ -75,6 +111,12 @@ class Participant implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=30 , unique=true)
+     * @Assert\NotBlank(message="Le pseudo ne doit pas être vide !")
+     * @Assert\Length(
+     *      max = 30,
+     *      maxMessage = "Votre pseudo ne peut pas être supérieur à {{ limit }} charactères",
+     *      allowEmptyString = false
+     * )
      */
     private $pseudo;
 
