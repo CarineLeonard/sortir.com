@@ -3,6 +3,8 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Participant;
+use App\Entity\Sortie;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
@@ -12,6 +14,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TelephoneField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Component\DomCrawler\Field\FileFormField;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class ParticipantCrudController extends AbstractCrudController
 {
@@ -71,7 +74,19 @@ class ParticipantCrudController extends AbstractCrudController
     } */
 
     // réécrire //deleteEntity ?
+    public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        /** @var Participant $entity */
+        $entity = $entityInstance;
 
+        if (!($entity->getSorties()->isEmpty())) {
+            $this->addFlash('danger', 'Vous ne pouvez pas supprimer un participant actif!');
+            return;
+        } else {
+            $entityManager->remove($entityInstance);
+            $entityManager->flush();
+        }
+    }
 
 
 }

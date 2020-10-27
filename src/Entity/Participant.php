@@ -107,7 +107,7 @@ class Participant implements UserInterface
     private $campus;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Sortie::class, cascade={"remove"})
+     * @ORM\ManyToMany(targetEntity=Sortie::class)
      * 	@ORM\JoinTable(name = "participant_sortie",
      *      joinColumns = { @ORM\JoinColumn(name = "id_participant", referencedColumnName="id_participant") },
      *      inverseJoinColumns = { @ORM\JoinColumn(name = "id_sortie", referencedColumnName="id_sortie") })
