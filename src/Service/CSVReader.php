@@ -24,7 +24,6 @@ class CSVReader
             $newCampus[$camp->getNom()]=$camp;
         }
 
-        if($data2[0] == $data2[1]) {
             foreach ($data2 as $ligne) {
                 $participant = new Participant();
                 $participant->setNom($ligne['nom']);
@@ -39,24 +38,8 @@ class CSVReader
 
                 $em->persist($participant);
                 dump($participant);
-            }
-        } else {
-            foreach ($data2 as $ligne) {
-                $participant = new Participant();
-                $participant->setNom($ligne[0]);
-                $participant->setPrenom($ligne[1]);
-                $participant->setTelephone($ligne[2]);
-                $participant->setMail($ligne[3]);
-                $participant->setMotPasse($ligne[4]);
-                $participant->setAdministrateur($ligne[4]);
-                $participant->setActif($ligne[5]);
-                $participant->setCampus($newCampus[$ligne[6]]);
-                $participant->setPseudo($ligne[7]);
 
-                $em->persist($participant);
-                dump($participant);
             }
-        }
 
         $em->flush();
 

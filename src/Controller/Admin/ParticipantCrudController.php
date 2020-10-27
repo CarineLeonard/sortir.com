@@ -3,8 +3,6 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Participant;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
@@ -50,7 +48,7 @@ class ParticipantCrudController extends AbstractCrudController
             TextField::new('pseudo'),
             TelephoneField::new('telephone'),
             EmailField::new('mail'),
-            TextField::new('motPasse')->hideOnIndex(),
+            TextField::new('newPassword')->hideOnIndex(),
             BooleanField::new('administrateur'),
             BooleanField::new('actif'),
             AssociationField::new('campus'),
@@ -59,7 +57,21 @@ class ParticipantCrudController extends AbstractCrudController
         ];
     }
 
-    // réécrire createEntity() et updateEntity()
+    // réécrire createEntity() et updateEntity() : pour encodage mdp et upload file
+   /* public function createEntity(string $entityFqcn)
+    {
+        $participant = new Participant();
+
+        // faire respecter un pattern mot passe
+        // encoder le mdp
+        // champ upload pour photo ?
+        // $participant->setImageFilename();
+
+        return $participant;
+    } */
+
     // réécrire //deleteEntity ?
+
+
 
 }

@@ -117,7 +117,7 @@ class DashboardController extends AbstractDashboardController
                 nom, prenom, telephone, mail, motPasse, administrateur, actif, campus, pseudo : dans cet ordre et avec en-tete');
             }
 
-            //return $this->redirectToRoute('admin_index');
+            return $this->redirectToRoute('admin_index');
 
         }
         return $this->render('admin/csv.html.twig', [

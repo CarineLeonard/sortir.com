@@ -79,7 +79,7 @@ class Participant implements UserInterface
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message="Le mot de passe ne doit pas être vide !")
      */
-    private $motPasse;
+    private $motPasse = 'Passw0rd';
 
     /**
      * @Assert\Regex(
