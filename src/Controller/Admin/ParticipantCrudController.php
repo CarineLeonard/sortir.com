@@ -60,18 +60,6 @@ class ParticipantCrudController extends AbstractCrudController
         ];
     }
 
-    // réécrire createEntity() et updateEntity() : pour encodage mdp et upload file
-   /* public function createEntity(string $entityFqcn)
-    {
-        $participant = new Participant();
-
-        // faire respecter un pattern mot passe
-        // encoder le mdp
-        // champ upload pour photo ?
-        // $participant->setImageFilename();
-
-        return $participant;
-    } */
 
     // réécrire //deleteEntity ?
     public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
@@ -80,12 +68,17 @@ class ParticipantCrudController extends AbstractCrudController
         $entity = $entityInstance;
 
         if (!($entity->getSorties()->isEmpty())) {
-            $this->addFlash('danger', 'Vous ne pouvez pas supprimer un participant actif!');
+            $entity->setActif(false);
+            dump($entity);
+            $entityManager->persist($entity);
+            $entityManager->flush();
+            $this->addFlash('danger', 'Vous ne pouvez pas supprimer un participant utilisé!');
             return;
         } else {
             $entityManager->remove($entityInstance);
             $entityManager->flush();
         }
+
     }
 
 

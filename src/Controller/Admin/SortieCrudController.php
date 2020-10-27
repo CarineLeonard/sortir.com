@@ -2,7 +2,9 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Participant;
 use App\Entity\Sortie;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
@@ -54,6 +56,13 @@ class SortieCrudController extends AbstractCrudController
             AssociationField::new('siteOrganisateur'),
             AssociationField::new('participants'),
         ];
+    }
+
+    // réécrire //deleteEntity ?
+    public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        $this->addFlash('danger', 'Vous ne pouvez pas supprimer une sortie!');
+        return;
     }
 
 }
