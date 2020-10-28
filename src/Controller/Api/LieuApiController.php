@@ -3,7 +3,9 @@
 namespace App\Controller\Api;
 
 use App\Entity\Lieu;
+use App\Entity\Ville;
 use App\Form\LieuType;
+use App\Form\VilleType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -46,8 +48,52 @@ class LieuApiController extends AbstractController
 
         $lieu = new Lieu();
         $lieuForm = $this->createForm(LieuType::class, $lieu);
+
+        $ville = new Ville();
+        $villeForm = $this->createForm(VilleType::class, $ville);
+
         $data = json_decode($request->getContent(), true);
-        $lieuForm->submit($data);
+        $lieuResult = $data;
+        $villeResult['nom'] = $lieuResult['ville_nom'];
+        $villeResult['codePostal'] = $lieuResult['ville_codePostal'];
+        $villeResult['_token'] = $lieuResult['ville__token'];
+        unset($lieuResult['ville_nom']);
+        unset($lieuResult['ville_codePostal']);
+        unset($lieuResult['ville__token']);
+
+        dump($lieuResult);
+        dump($villeResult);
+
+        if (!$lieuResult['ville'])
+        {
+            $villeForm->submit($villeResult);
+
+            if ($villeForm->isValid())
+            {
+                $em->persist($ville);
+                $em->flush();
+                $status = 'OK';
+                $message = 'Ville créé';
+                $code = Response::HTTP_CREATED;
+
+                $lieuResult['ville'] = $ville->getIdVille();
+            }
+            else
+            {
+                $status = 'KO';
+                $message = [];
+                foreach ($villeForm->getErrors(true, false) as $error)
+                {
+                    $message[] = [
+                        'attr' => $error,
+                        'msg' => $error,
+                    ];
+                }
+                $code = Response::HTTP_CREATED;
+            }
+        }
+
+        $lieuForm->submit($lieuResult);
 
         if ($lieuForm->isValid())
         {
@@ -70,12 +116,17 @@ class LieuApiController extends AbstractController
             }
             $code = Response::HTTP_CREATED;
         }
+
         $result = [
             'status' => $status,
             'message' => $message,
             'data' => [
                 'lieu' => $lieu,
-                'form' => $this->render('lieu/nouveau.html.twig', ['lieuForm' => $lieuForm->createView()])->getContent()
+                'form' => $this->render('lieu/nouveau.html.twig', [
+                    'lieuForm' => $lieuForm->createView(),
+                    'villeForm' => $villeForm->createView(),
+                ])->getContent(),
+                'data' => $data
             ],
         ];
 

@@ -10,6 +10,7 @@ use App\Entity\Ville;
 use App\Form\LieuType;
 use App\Form\SortieType;
 use App\Form\SortieUpdateType;
+use App\Form\VilleType;
 use App\Service\EtatsSortieService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -88,11 +89,14 @@ class SortieController extends AbstractController
 
         $lieu = new Lieu();
         $lieuForm = $this->createForm(LieuType::class, $lieu);
+        $ville = new Ville();
+        $villeForm = $this->createForm(VilleType::class, $ville);
 
         return $this->render('sortie/nouvelle.html.twig', [
             'controller_name' => 'SortieController',
             'sortieForm' => $sortieForm->createView(),
             'lieuForm' => $lieuForm->createView(),
+            'villeForm' => $villeForm->createView(),
         ]);
     }
 
@@ -185,11 +189,14 @@ class SortieController extends AbstractController
         }
 
 
+        $ville = new Ville();
+        $villeForm = $this->createForm(VilleType::class, $ville);
 
         return $this->render('sortie/modifier.html.twig', [
             'controller_name' => 'SortieController',
             'sortieForm' => $sortieForm->createView(),
             'lieuForm' => $lieuForm->createView(),
+            'villeForm' => $villeForm->createView(),
             'sortie' => $sortie,
             'lieu' => $lieu,
         ]);

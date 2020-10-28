@@ -57,14 +57,17 @@ class ParticipantController extends AbstractController
                 $this->addFlash('success', 'Votre profil a bien été mis à jour!');
                 return $this->redirectToRoute('main_index');
             } else {
+
                 $this->addFlash('danger', 'Merci de recopier votre mot de passe actuel');
                 return $this->render('participant/profil.html.twig', [
                     'participantForm' => $participantForm->createView(),
                     'participant' => $participant,
                 ]);
             }
-
+        } else {
+            $em->refresh($user);
         }
+
         return $this->render('participant/profil.html.twig', [
             'participantForm' => $participantForm->createView(),
             'participant' => $participant,
