@@ -66,6 +66,12 @@ class Lieu
      */
     private $ville;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Sortie::class, mappedBy="lieu", cascade={"persist"})
+     * @ORM\JoinColumn(nullable=false, name="id_sortie", referencedColumnName="id_sortie")
+     */
+    private $sorties;
+
     public function getId(): ?int
     {
         return $this->idLieu;
@@ -135,5 +141,23 @@ class Lieu
     {
         return $this->nom;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getSorties()
+    {
+        return $this->sorties;
+    }
+
+    /**
+     * @param mixed $sorties
+     */
+    public function setSorties($sorties): void
+    {
+        $this->sorties = $sorties;
+    }
+
+
 
 }

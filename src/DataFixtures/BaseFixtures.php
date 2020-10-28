@@ -44,6 +44,7 @@ class BaseFixtures extends Fixture
 
     public function load(ObjectManager $manager)
     {
+
         //Campus
         $userCampus = new Campus();
         foreach ($this->libellesCampus as $libelle)
@@ -64,6 +65,7 @@ class BaseFixtures extends Fixture
             $manager->persist($etat);
         }
         $manager->flush();
+
 
         //Participants
         //user

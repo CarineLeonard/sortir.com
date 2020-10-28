@@ -91,7 +91,7 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
 
 
 
-        // 20 sorties
+        // 40 sorties
         for ($i = 0; $i < 20; $i++)
         {
             $sortie = new Sortie();

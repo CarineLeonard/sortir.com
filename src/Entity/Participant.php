@@ -79,7 +79,7 @@ class Participant implements UserInterface
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message="Le mot de passe ne doit pas être vide !")
      */
-    private $motPasse;
+    private $motPasse = 'Passw0rd';
 
     /**
      * @Assert\Regex(
@@ -107,7 +107,7 @@ class Participant implements UserInterface
     private $campus;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Sortie::class, cascade={"remove"})
+     * @ORM\ManyToMany(targetEntity=Sortie::class)
      * 	@ORM\JoinTable(name = "participant_sortie",
      *      joinColumns = { @ORM\JoinColumn(name = "id_participant", referencedColumnName="id_participant") },
      *      inverseJoinColumns = { @ORM\JoinColumn(name = "id_sortie", referencedColumnName="id_sortie") })
@@ -120,7 +120,6 @@ class Participant implements UserInterface
      * @Assert\Length(
      *      max = 30,
      *      maxMessage = "Votre pseudo ne peut pas être supérieur à {{ limit }} charactères",
-     *      allowEmptyString = false
      * )
      */
     private $pseudo;

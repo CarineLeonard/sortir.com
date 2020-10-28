@@ -2,7 +2,9 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Campus;
 use App\Entity\Etat;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 
@@ -30,14 +32,11 @@ class EtatCrudController extends AbstractCrudController
         ;
     }
 
-    /*
-    public function configureFields(string $pageName): iterable
+    public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
-        return [
-            IdField::new('id'),
-            TextField::new('title'),
-            TextEditorField::new('description'),
-        ];
+
+            $this->addFlash('danger', 'Vous ne pouvez pas supprimer un état!');
+            return;
+
     }
-    */
 }

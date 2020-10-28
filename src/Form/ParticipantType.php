@@ -14,6 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\Regex;
 
 class ParticipantType extends AbstractType
 {
@@ -26,9 +27,12 @@ class ParticipantType extends AbstractType
             ->add('telephone', TextType::class)
             ->add('mail', EmailType::class)
             ->add('motPasse', PasswordType::class, [
+                'mapped' => false,
                 'required' => true,
                 'label' => 'Mot de passe actuel',
-                'mapped' => false,
+                'constraints' => [
+                    new Regex('#[0-9]+#')
+                ],
             ])
             ->add('newPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
@@ -52,7 +56,7 @@ class ParticipantType extends AbstractType
                 'required' => false,
                 'constraints' => [
                     new File([
-                        //'maxSize' => '1000M',              // bypasser moche ...
+                        'maxSize' => '2M',              // bypasser moche ...
                         'mimeTypes' => [
                             'image/jpeg',
                             'image/png',

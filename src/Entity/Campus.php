@@ -29,6 +29,12 @@ class Campus
      */
     private $nom;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Participant::class, mappedBy="campus", cascade={"persist"})
+     * @ORM\JoinColumn(nullable=false, name="id_participant", referencedColumnName="id_participant")
+     */
+    private $participants;
+
     public function getIdCampus(): ?int
     {
         return $this->idCampus;
@@ -49,4 +55,22 @@ class Campus
     public function __toString(){
         return $this->nom;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getParticipants()
+    {
+        return $this->participants;
+    }
+
+    /**
+     * @param mixed $participants
+     */
+    public function setParticipants($participants): void
+    {
+        $this->participants = $participants;
+    }
+
+
 }
