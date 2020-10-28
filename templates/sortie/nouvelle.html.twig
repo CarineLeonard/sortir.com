@@ -35,23 +35,30 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group">
+            <div class="form-group d-none">
                 <label for="rue">Rue</label>
                 <div id="rue" class="form-control-plaintext text-dark">&nbsp;</div>
             </div>
-            <div class="form-group">
+            <div class="form-group d-none">
                 <label for="code_postal">Code postal</label>
                 <div id="code_postal" class="form-control-plaintext text-dark">&nbsp;</div>
             </div>
-            <div class="form-group">
+            <div class="form-group d-none">
                 <label for="latitude">Latitude</label>
                 <div id="latitude" class="form-control-plaintext text-dark">&nbsp;</div>
             </div>
-            <div class="form-group">
+            <div class="form-group d-none">
                 <label for="longitude">Longitude</label>
                 <div id="longitude" class="form-control-plaintext text-dark">&nbsp;</div>
             </div>
-            <div id="map" style="width: 100%; height: 400px;"></div>
+            <div id="map" style="width: 100%; height: 400px;">
+                <div id="map-popup" class="ol-popup">
+                    <div class="clearfix">
+                        <a href="#" id="map-popup-closer" class="ol-popup-closer"></a>
+                        <div id="map-popup-content"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="col">
@@ -97,16 +104,38 @@
             ],
             view: new ol.View({
                 center: ol.proj.fromLonLat([0, 0]),
-                zoom: 0
+                zoom: 1
             })
         });
 
-        map.on('singleclick', function (event) {
-            if (map.hasFeatureAtPixel(event.pixel) === true) {
-                let coordinate = event.coordinate;
+        let mapContainer = document.getElementById('map-popup');
+        let mapContent = document.getElementById('map-popup-content');
+        let mapCloser = document.getElementById('map-popup-closer');
 
-                content.innerHTML = '<b>Hello world!</b><br />I am a popup.';
-                overlay.setPosition(coordinate);
+        let mapOverlay = new ol.Overlay({
+            element: mapContainer,
+            autoPan: true,
+            autoPanAnimation: {
+                duration: 250
+            }
+        });
+        map.addOverlay(mapOverlay);
+
+        mapCloser.onclick = function() {
+            mapOverlay.setPosition(undefined);
+            mapCloser.blur();
+            return false;
+        };
+
+        map.on('singleclick', function (event) {
+            let feature = map.getFeaturesAtPixel(event.pixel);
+            if (feature[0] !== undefined) {
+                let coordinate = feature[0].values_.geometry.flatCoordinates;
+
+                mapOverlay.setPosition(coordinate);
+            } else {
+                mapOverlay.setPosition(undefined);
+                mapCloser.blur();
             }
         });
 
@@ -124,26 +153,36 @@
             });
             target.addLayer(layer);
 
-            if (Math.floor(target.getView().getZoom()) === 0 || dezoom !== true) {
+            if (Math.floor(target.getView().getZoom()) === 1 || dezoom !== true) {
                 target.getView().animate({zoom: 15});
                 target.getView().animate({center: ol.proj.fromLonLat([long, lat])});
             } else {
-                target.getView().animate({zoom: 0}, function() {
+                target.getView().animate({zoom: 1}, function() {
                     target.getView().animate({zoom: 15});
                     target.getView().animate({center: ol.proj.fromLonLat([long, lat])});
                 });
+            }
+            if (target === map) {
+                mapOverlay.setPosition(ol.proj.fromLonLat([long, lat]));
             }
         }
 
         function resetView(target) {
             target.removeLayer(layer);
-            if (Math.floor(target.getView().getZoom()) !== 0) {
-                target.getView().animate({zoom: 0});
+            if (Math.floor(target.getView().getZoom()) !== 1) {
+                target.getView().animate({zoom: 1});
             }
             target.getView().animate({center: [0, 0]});
+            mapOverlay.setPosition(undefined);
+            mapCloser.blur();
         }
 
         let formMap;
+
+        let formMapContainer;
+        let formMapContent;
+        let formMapCloser;
+        let formMapOverlay;
         function loadFormMap() {
             formMap = new ol.Map({
                 controls: ol.control.defaults({attribution: false}).extend([
@@ -160,23 +199,57 @@
                 ],
                 view: new ol.View({
                     center: ol.proj.fromLonLat([0, 0]),
-                    zoom: 0
+                    zoom: 1
                 })
             });
 
-            formMap.on('singleclick', function (event) {
-                if (formMap.hasFeatureAtPixel(event.pixel) === true) {
-                    var coordinate = event.coordinate;
+            formMapContainer = document.getElementById('formMap-popup');
+            formMapContent = document.getElementById('formMap-popup-content');
+            formMapCloser = document.getElementById('formMap-popup-closer');
 
-                    content.innerHTML = '<b>Hello world!</b><br />I am a popup.';
-                    overlay.setPosition(coordinate);
+            formMapOverlay = new ol.Overlay({
+                element: formMapContainer,
+                autoPan: true,
+                autoPanAnimation: {
+                    duration: 250
+                }
+            });
+            formMap.addOverlay(formMapOverlay);
+
+            formMapCloser.onclick = function() {
+                formMapOverlay.setPosition(undefined);
+                formMapCloser.blur();
+                return false;
+            };
+
+            formMap.on('singleclick', function (event) {
+                let feature = formMap.getFeaturesAtPixel(event.pixel);
+                if (feature[0] !== undefined) {
+                    let coordinate = feature[0].values_.geometry.flatCoordinates;
+
+                    formMapOverlay.setPosition(coordinate);
                 } else {
                     let longLat = ol.proj.toLonLat(event.coordinate);
                     displayLocation(longLat[1], longLat[0]);
                     addMarker(formMap, longLat[1], longLat[0], false);
+                    formMapOverlay.setPosition(event.coordinate);
                 }
-            });
+            })
+
+            let latitude = $('#lieu_latitude').val();
+            let longitude = $('#lieu_longitude').val();
+            if (latitude && longitude) {
+                displayLocation(latitude, longitude);
+                addMarker(formMap, latitude, longitude);
+                let coordinates = ol.proj.fromLonLat([longitude, latitude]);
+
+                setTimeout(() => {
+                    formMapOverlay.setPosition(coordinates);
+                }, 0);
+            }
         }
+
+        $('#ville').toggle(false);
 
         $('#lieuModal').on('shown.bs.modal', function () {
             if (formMap === undefined) {
@@ -191,29 +264,51 @@
                 url : 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat='+latitude+'&lon='+longitude+'&zoom='+zoom,
                 type: 'GET',
                 success: function(data) {
-                    console.log(zoom);
-                    console.log(data);
                     if (data.address) {
+                        console.log(data.address)
                         let address = data.address;
                         let postcode = address.postcode ? address.postcode : '';
-                        let ville = (address.hamlet || address.village || address.town || address.city || address.municipality || address.county);
+                        let ville = (address.village || address.town || address.city || address.municipality || address.county);
                         let rue = (address.house_number ? address.house_number + ', ' : '') + (address.road ? address.road : '')
 
-                        if (ville && postcode) {
-                            $('#lieu_rue').val(rue ? rue : '');
-                            $('#lieu_latitude').val(latitude);
-                            $('#lieu_longitude').val(longitude);
+                        formMapContent.innerHTML = '';
 
-                            $('#lieu_ville option[value="-1"]').remove();
-                            $('#lieu_ville').append('<option value="-1">'+ville+' (' + postcode + ')</option>');
-                            $('#lieu_ville option[value="-1"]').prop('selected', true);
+                        if (rue) {
+                            $('#lieu_rue').val(rue);
+                            formMapContent.innerHTML += 'Rue : ' + rue + '<br />';
                         } else {
-                            $('#lieu_latitude').val(latitude);
-                            $('#lieu_longitude').val(longitude);
-
-                            $('#lieu_ville option[value="-1"]').remove();
-                            $('#lieu_ville option[value=""]').prop('selected', true);
+                            $('#lieu_rue').val('');
                         }
+
+                        let $lieuVilleFormGroup = $lieuVille.parent();
+                        if (ville && postcode) {
+                            let villePostCode = ville+' (' + postcode + ')';
+
+                            let villeOption = $('#lieu_ville option:contains("'+villePostCode+'")');
+                            if (villeOption.val() !== undefined) {
+                                villeOption.prop('selected', true);
+                                $lieuVilleFormGroup.toggle(false);
+                                $('#ville').toggle(false);
+                            } else {
+                                $lieuVilleFormGroup.toggle(false);
+                                $lieuVille.prop('selectedIndex', 0);
+                                $('#ville').toggle(true);
+                                $('#ville_nom').val(ville);
+                                $('#ville_codePostal').val(postcode);
+                            }
+
+                            formMapContent.innerHTML += 'Ville : ' + villePostCode + '<br />';
+                        } else {
+                            $lieuVilleFormGroup.toggle(false);
+                            $lieuVille.prop('selectedIndex', 0);
+                            $('#ville').toggle(true);
+                            $('#ville_nom').val(ville);
+                            $('#ville_codePostal').val(postcode);
+                        }
+
+                        $('#lieu_latitude').val(latitude);
+                        $('#lieu_longitude').val(longitude);
+                        formMapContent.innerHTML += 'Latitude : ' + latitude + "<br />" + 'Longitude : ' + longitude;
                     }
                 }
             });
@@ -280,12 +375,17 @@
                             $('#latitude').html(response.data.latitude);
                             $('#longitude').html(response.data.longitude);
                             addMarker(map, response.data.latitude, response.data.longitude);
+                            mapContent.innerHTML = response.data.rue +'<br />' +
+                                                   response.data.ville.nom + ' ('+response.data.ville.codePostal +')<br />' +
+                                                   'Latitude : ' + response.data.latitude +'<br />' +
+                                                   'Longitude : ' + response.data.longitude
+                            ;
                         } else {
                             $('#rue').html('&nbsp;');
                             $('#code_postal').html('&nbsp;');
                             $('#latitude').html('&nbsp;');
                             $('#longitude').html('&nbsp;');
-                            resetView(map)
+                            resetView(map);
                         }
                     },
                     error: function () {
@@ -293,7 +393,7 @@
                         $('#code_postal').html('&nbsp;');
                         $('#latitude').html('&nbsp;');
                         $('#longitude').html('&nbsp;');
-                        resetView(map)
+                        resetView(map);
                     }
                 });
             } else {
@@ -301,7 +401,7 @@
                 $('#code_postal').html('&nbsp;');
                 $('#latitude').html('&nbsp;');
                 $('#longitude').html('&nbsp;');
-                resetView(map)
+                resetView(map);
             }
         });
 
@@ -315,11 +415,15 @@
             data['longitude'] = $('#lieu_longitude').val();
             data['ville'] = $('#lieu_ville').val();
             data['_token'] = $(`#lieu__token`).val();
+            data['ville_nom'] = $('#ville_nom').val();
+            data['ville_codePostal'] = $('#ville_codePostal').val();
+            data['ville__token'] = $('#ville__token').val();
             $.ajax({
                 url : $url,
                 type: 'POST',
                 data: JSON.stringify(data),
                 success: function(response) {
+                    console.log(response)
                     $lieuForm.html(response.data.form);
 
                     $lieuVille = $('#lieu_ville');
@@ -332,6 +436,10 @@
                     loadFormMap();
 
                     if (response.status === 'OK') {
+                        let $options = $("#lieu_ville > option").clone();
+                        $("#sortie_ville > option").remove();
+                        $ville.append($options);
+
                         $lieuModal.modal('toggle');
                         $lieu.prop('disabled', false);
                         $lieu.append('<option value="'+response.data.lieu.id+'">'+response.data.lieu.nom+'</option>');

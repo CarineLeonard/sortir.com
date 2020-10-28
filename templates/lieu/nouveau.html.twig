@@ -1,7 +1,17 @@
+{#{% form_theme lieuForm 'bootstrap_4_horizontal_layout.html.twig' %}#}
+{#{% form_theme villeForm 'bootstrap_4_horizontal_layout.html.twig' %}#}
 {{ form_start(lieuForm) }}
 <div class="modal-body">
     {{ form_widget(lieuForm) }}
-    <div id="formMap" style="width: 100%; height: 400px;"></div>
+    {{ form(villeForm) }}
+    <div id="formMap" style="width: 100%; height: 400px;">
+        <div id="formMap-popup" class="ol-popup">
+            <div class="clearfix">
+                <a href="#" id="formMap-popup-closer" class="ol-popup-closer"></a>
+                <div id="formMap-popup-content"></div>
+            </div>
+        </div>
+    </div>
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
