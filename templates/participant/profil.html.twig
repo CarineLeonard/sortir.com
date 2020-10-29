@@ -6,7 +6,7 @@
 
 {% block body %}
     {{ form_start(participantForm) }}
-<div class="row justify-content-center">
+<div class="row justify-content-center text-truncate">
     <div class="col-12 col-md-4">
         {% if participant.imageFilename != null %}
             <img src="{{ asset('uploads/images/' ~ participant.imageFilename) }}" class="img-thumbnail img-fluid" alt="Image de profil" style="max-height: 200px;">
