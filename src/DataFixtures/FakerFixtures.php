@@ -13,7 +13,7 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
-class AppFixtures extends Fixture implements DependentFixtureInterface
+class FakerFixtures extends Fixture implements DependentFixtureInterface
 {
     private $encoder;
 
@@ -50,7 +50,7 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
             $participant->setMotPasse($this->encoder->encodePassword($participant,'Passw0rd'));
             $participant->setAdministrateur($faker->boolean);
             $participant->setActif($faker->boolean);
-            $participant->setCampus( $nosCampus[random_int(1, count($nosCampus)-1)]);
+            $participant->setCampus( $nosCampus[random_int(0, count($nosCampus)-1)]);
 
             $manager->persist($participant);
         }
@@ -78,7 +78,7 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
             $lieu->setRue($faker->streetAddress);
             $lieu->setLatitude($faker->latitude);
             $lieu->setLongitude($faker->longitude);
-            $lieu->setVille( $nosVilles[random_int(1, count($nosVilles)-1)]);
+            $lieu->setVille( $nosVilles[random_int(0, count($nosVilles)-1)]);
             $manager->persist($lieu);
         }
         $manager->flush();
@@ -119,9 +119,9 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
                 $sortie->setEtat( $nosEtat[random_int(3,5)]);
             }
 
-            $sortie->setSiteOrganisateur( $nosCampus[random_int(1, count($nosCampus)-1)]);
-            $sortie->setLieu( $nosLieu[random_int(1, count($nosLieu)-1)]);
-            $sortie->setOrganisateur( $nosParticipant[random_int(1, count($nosParticipant)-1)]);
+            $sortie->setSiteOrganisateur( $nosCampus[random_int(0, count($nosCampus)-1)]);
+            $sortie->setLieu( $nosLieu[random_int(0, count($nosLieu)-1)]);
+            $sortie->setOrganisateur( $nosParticipant[random_int(0, count($nosParticipant)-1)]);
             // ok ??
             $j = $faker->numberBetween($min = 1, $max = ($sortie->getNbinscriptionsMax())) ;
             for ($i=0; $i<=$j; $i++)
@@ -171,8 +171,6 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
         $manager->flush();
 
     }
-
-
 
     // Cette partie permet de s'assurer que BaseFixtures est exécutée en premier.
     // Cela permet de disposer d'un campus (déjà créé dans BaseFixtures) grâce à addReference et getReference.
