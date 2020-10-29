@@ -98,12 +98,20 @@
                                 <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a>
                                 {% if (sortie.etat.libelle == 'ouverte' or sortie.etat.libelle == 'clôturée') and sortie.dateHeureDebut > date() %}
                                      - <a href="{{ path ('sortie_annuler', {'id' : sortie.idSortie }) }}">Annuler</a>
+                                    {% if app.user in sortie.participants %}
+                                        - <a href="{{ path ('sortie_desistement', {'id' : sortie.idSortie }) }}">Se désister</a>
+                                    {% elseif sortie.etat.libelle == 'ouverte' %}
+                                        - <a href="{{ path ('sortie_inscription', {'id' : sortie.idSortie }) }}">S'inscrire</a>
+                                    {% endif %}
                                 {% endif %}
                             {% endif %}
                         {% elseif app.user in sortie.participants %}
                             {#  si on est inscrit à la sortie #}
                             <a href="{{ path ('sortie_afficher', {'id' : sortie.idSortie }) }}">Afficher</a>
                             {% if sortie.etat.libelle == 'ouverte' or sortie.etat.libelle == 'clôturée' %}
+                                {% if 'ROLE_ADMIN' in app.user.roles) and sortie.dateHeureDebut > date() %}
+                                    - <a href="{{ path ('sortie_annuler', {'id' : sortie.idSortie }) }}">Annuler</a>
+                                {% endif %}
                                  - <a href="{{ path ('sortie_desistement', {'id' : sortie.idSortie }) }}">Se désister</a>
                             {% endif %}
                         {% else %}
