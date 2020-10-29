@@ -79,7 +79,6 @@ class BaseFixtures extends Fixture
         $participant->setActif(true);
         $participant->setCampus($userCampus);
         $participant-> setPseudo('user');
-        $participant->setImageFilename('uploads/images/profilDefault.jpg');
         $manager->persist($participant);
 
         //admin : dans migrations
@@ -93,7 +92,6 @@ class BaseFixtures extends Fixture
 //        $participant->setActif(true);
 //        $participant->setCampus($userCampus);
 //        $participant-> setPseudo('admin');
-//        $participant->setImageFilename('profilDefault.jpg');
 //        $manager->persist($participant);
 
         $manager->flush();

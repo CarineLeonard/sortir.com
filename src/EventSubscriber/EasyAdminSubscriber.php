@@ -33,38 +33,7 @@ class EasyAdminSubscriber implements EventSubscriberInterface {
         ];
     }
 
-    /*// pour delete un participant
-    public function deleteEntity(BeforeEntityDeletedEvent $event) {
-        $entity = $event->getEntityInstance();
-
-        if ($entity instanceof Participant) {
-            $sorties = $this->slugger->slug($entity->getSorties());
-            for ($s=0; $s< count($sorties); $s++) {
-
-            }
-
-        } elseif ($entity instanceof Campus) {
-            // "ancien campus" en nom de campus : existant ou create ! pour les participants !
-            // mais pb / page accueil : remonte ! ou alors bascule sur "Nantes" / ou suppression ?
-
-        } elseif ($entity instanceof Sortie) {
-
-
-        } elseif ($entity instanceof Lieu) {
-
-
-        } elseif ($entity instanceof Ville) {
-
-
-        } else {
-            return;
-        }
-
-
-    } */
-
-
-    // pour create personnalisé sur easyadmin
+     // pour create personnalisé sur easyadmin
     public function setParticipant(BeforeEntityPersistedEvent $event) {
         $entity = $event->getEntityInstance();
 
