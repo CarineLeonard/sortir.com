@@ -8,25 +8,52 @@ use App\Entity\Lieu;
 use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Entity\Ville;
+use App\Service\EtatsSortieService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
-class FakerFixtures extends Fixture implements DependentFixtureInterface
+class FakerFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {
     private $encoder;
+
+    private $libellesCampus = [
+        'Quimper',
+        'Rennes',
+        //'Nantes Faraday',
+        'Niort',
+        'Laval',
+        'Mans',
+        'Anger',
+        'La Roche-sur-Yon'
+    ];
 
     public function __construct(UserPasswordEncoderInterface $encoder)
     {
         $this->encoder = $encoder;
     }
 
+    public static function getGroups(): array
+    {
+        return ['faker'];
+    }
+
     public function load(ObjectManager $manager)
     {
         // langue = FR
         $faker = \Faker\Factory::create('fr_FR');
+        $etatsSortieService = new EtatsSortieService($manager);
 
+        //Campus
+        foreach ($this->libellesCampus as $libelle)
+        {
+            $campus = new Campus();
+            $campus->setNom($libelle);
+            $manager->persist($campus);
+        }
+        $manager->flush();
         //Campus : si on en veut plus que les 8 connus
         /*for ($i = 0; $i < 12; $i++)
         {
@@ -54,6 +81,18 @@ class FakerFixtures extends Fixture implements DependentFixtureInterface
 
             $manager->persist($participant);
         }
+        //user
+        $participant = new Participant();
+        $participant->setNom('user');
+        $participant->setPrenom('name');
+        $participant->setTelephone('0654321987');
+        $participant->setMail('user@campus-eni.fr');
+        $participant->setMotPasse($this->encoder->encodePassword($participant,'Passw0rd'));
+        $participant->setAdministrateur(false);
+        $participant->setActif(true);
+        $participant->setCampus($nosCampus[random_int(0, count($nosCampus)-1)]);
+        $participant-> setPseudo('user');
+        $manager->persist($participant);
         $manager->flush();
         $participantRepository = $manager->getRepository(Participant::class);
         $nosParticipant = $participantRepository->findAll();
@@ -107,21 +146,22 @@ class FakerFixtures extends Fixture implements DependentFixtureInterface
             $sortie->setNbinscriptionsMax($faker->numberBetween($min = 6, $max = 20));
             $sortie->setInfosSortie($faker->text($maxNbChars = 400));
             // à modifier !!
-            if ($sortie->getDateHeureDebut()>new \DateTime('now'))
-            {
-                if (($sortie->getDateLimiteInscription())>new \DateTime('now'))
-                {
-                    $sortie->setEtat( $nosEtat[random_int(0,1)]);
-                } else {
-                    $sortie->setEtat( $nosEtat[2]);
-                }
-            } else {
-                $sortie->setEtat( $nosEtat[random_int(3,5)]);
-            }
+//            if ($sortie->getDateHeureDebut()>new \DateTime('now'))
+//            {
+//                if (($sortie->getDateLimiteInscription())>new \DateTime('now'))
+//                {
+//                    $sortie->setEtat( $nosEtat[random_int(0,1)]);
+//                } else {
+//                    $sortie->setEtat( $nosEtat[2]);
+//                }
+//            } else {
+//                $sortie->setEtat( $nosEtat[random_int(3,5)]);
+//            }
 
-            $sortie->setSiteOrganisateur( $nosCampus[random_int(0, count($nosCampus)-1)]);
-            $sortie->setLieu( $nosLieu[random_int(0, count($nosLieu)-1)]);
             $sortie->setOrganisateur( $nosParticipant[random_int(0, count($nosParticipant)-1)]);
+//            $sortie->setSiteOrganisateur( $nosCampus[random_int(0, count($nosCampus)-1)]);
+            $sortie->setSiteOrganisateur($sortie->getOrganisateur()->getCampus());
+            $sortie->setLieu( $nosLieu[random_int(0, count($nosLieu)-1)]);
             // ok ??
             $j = $faker->numberBetween($min = 1, $max = ($sortie->getNbinscriptionsMax())) ;
             for ($i=0; $i<=$j; $i++)
@@ -130,9 +170,11 @@ class FakerFixtures extends Fixture implements DependentFixtureInterface
                     $sortie->addParticipants($participantRepository->find($nosParticipant[random_int(0, count($nosParticipant)-1)]));
                 }
             }
-            if (count($sortie->getParticipants()) == $sortie->getNbinscriptionsMax()) {
-                $sortie->setEtat($nosEtat[2]);
-            }
+//            if (count($sortie->getParticipants()) == $sortie->getNbinscriptionsMax()) {
+//                $sortie->setEtat($nosEtat[2]);
+//            }
+            $sortie->setEtat($nosEtat[random_int(0, count($nosEtat)-1)]);
+            $etatsSortieService->updateEtatWithoutPersist($sortie);
             $manager->persist($sortie);
         }
         $manager->flush();
@@ -146,10 +188,13 @@ class FakerFixtures extends Fixture implements DependentFixtureInterface
         $sortie->setNbinscriptionsMax(8);
         $sortie->setInfosSortie('Les infos sont importantes, alors les voici en détail : eer er er ezr zer  retrt ret retret ert ret ert ert er tr ter
         trtretretr tr e tr  tr t rt rt tr t e te rtetret');
-        $sortie->setEtat($nosEtat[1]);
-        $sortie->setSiteOrganisateur($nosCampus[2]);
         $sortie->setLieu($nosLieu[2]);
         $sortie->setOrganisateur($nosParticipant[1]);
+//        $sortie->setSiteOrganisateur($nosCampus[2]);
+//        $sortie->setEtat($nosEtat[1]);
+        $sortie->setSiteOrganisateur($sortie->getOrganisateur()->getCampus());
+        $sortie->setEtat($nosEtat[1]);
+        $etatsSortieService->updateEtatWithoutPersist($sortie);
 
         $manager->persist($sortie);
 
@@ -161,10 +206,13 @@ class FakerFixtures extends Fixture implements DependentFixtureInterface
         $sortie2->setNbinscriptionsMax(16);
         $sortie2->setInfosSortie('Les infos sont importantes, alors les voici en détail : eer er er ezr zer  retrt ret retret ert ret ert ert er tr ter
         trtretretr tr e tr  tr t rt rt tr t e te rtetret');
-        $sortie2->setEtat($nosEtat[0]);
-        $sortie2->setSiteOrganisateur($nosCampus[3]);
         $sortie2->setLieu($nosLieu[6]);
         $sortie2->setOrganisateur($nosParticipant[1]);
+//        $sortie2->setSiteOrganisateur($nosCampus[3]);
+//        $sortie2->setEtat($nosEtat[0]);
+        $sortie2->setSiteOrganisateur($sortie2->getOrganisateur()->getCampus());
+        $sortie2->setEtat($nosEtat[0]);
+        $etatsSortieService->updateEtatWithoutPersist($sortie2);
 
         $manager->persist($sortie2);
 
@@ -172,10 +220,6 @@ class FakerFixtures extends Fixture implements DependentFixtureInterface
 
     }
 
-    // Cette partie permet de s'assurer que BaseFixtures est exécutée en premier.
-    // Cela permet de disposer d'un campus (déjà créé dans BaseFixtures) grâce à addReference et getReference.
-    // Il faut implémenter DependentFixtureInterface pour que ça fonctionne.
-    // https://symfony.com/doc/current/bundles/DoctrineFixturesBundle/index.html#sharing-objects-between-fixtures
    public function getDependencies()
     {
         return array(
