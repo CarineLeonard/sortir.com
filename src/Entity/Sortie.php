@@ -66,7 +66,7 @@ class Sortie
     private $organisateur;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Lieu::class, cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity=Lieu::class, inversedBy="sorties", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false, name="id_lieu", referencedColumnName="id_lieu")
      * @Assert\NotBlank(message="Le lieu ne doit pas être vide !")
      */

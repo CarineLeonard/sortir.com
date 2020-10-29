@@ -100,7 +100,7 @@ class Participant implements UserInterface
     private $actif;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Campus::class, cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity=Campus::class, inversedBy="participants", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false, name="id_campus", referencedColumnName="id_campus")
      * @Assert\NotBlank(message="Le campus ne doit pas être vide !")
      */
