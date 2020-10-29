@@ -43,7 +43,7 @@ h1 {
 
 .tableFixHead {
     overflow-y: auto;
-    height: calc(80vh - 150px);
+    max-height: calc(80vh - 150px);
 }
 .tableFixHead thead th {
     position: sticky;
