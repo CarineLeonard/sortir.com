@@ -1,5 +1,9 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/css/ol.css" type="text/css">
+{% endblock %}
 {% block title %}Afficher une sortie{% endblock %}
 {% block titre %}Afficher une sortie{% endblock %}
 
@@ -40,21 +44,29 @@
             <div class="col-sm-6">Lieu :</div>
             <div id="lieu" class="form-control-plaintext col-sm-6 text-center text-sm-left text-dark">{{ sortie.lieu.nom }}</div>
         </div>
-        <div class="form-row align-items-center">
+        <div class="form-row align-items-center d-none">
             <div class="col-sm-6">Rue :</div>
             <div id="rue" class="form-control-plaintext col-sm-6 text-center text-sm-left text-dark">{{ sortie.lieu.rue }}</div>
         </div>
-        <div class="form-row align-items-center">
+        <div class="form-row align-items-center d-none">
             <div class="col-sm-6">Ville :</div>
             <div id="ville" class="form-control-plaintext col-sm-6 text-center text-sm-left text-dark">{{ sortie.lieu.ville.__toString }}</div>
         </div>
-        <div class="form-row align-items-center">
+        <div class="form-row align-items-center d-none">
             <div class="col-sm-6">Latitude :</div>
             <div id="latitude" class="form-control-plaintext col-sm-6 text-center text-sm-left text-dark">{{ sortie.lieu.latitude }}</div>
         </div>
-        <div class="form-row align-items-center">
+        <div class="form-row align-items-center d-none">
             <div class="col-sm-6">Longitude :</div>
             <div id="longitude" class="form-control-plaintext col-sm-6 text-center text-sm-left text-dark">{{ sortie.lieu.longitude }}</div>
+        </div>
+        <div id="map" style="width: 100%; height: 400px;">
+            <div id="map-popup" class="ol-popup text-center">
+                <div class="clearfix">
+                    <a href="#" id="map-popup-closer" class="ol-popup-closer"></a>
+                    <div id="map-popup-content"></div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -78,4 +90,106 @@
         </tbody>
     </table>
 </div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/build/ol.js"></script>
+    <script type="text/javascript">
+        let map = new ol.Map({
+            controls: ol.control.defaults({attribution: false}).extend([
+                new ol.control.Attribution({
+                    collapsible: true,
+                    collapsed: true
+                })
+            ]),
+            target: 'map',
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                })
+            ],
+            view: new ol.View({
+                center: ol.proj.fromLonLat([0, 0]),
+                zoom: 1
+            })
+        });
+
+        let mapContainer = document.getElementById('map-popup');
+        let mapContent = document.getElementById('map-popup-content');
+        let mapCloser = document.getElementById('map-popup-closer');
+
+        let mapOverlay = new ol.Overlay({
+            element: mapContainer,
+            autoPan: true,
+            autoPanAnimation: {
+                duration: 250
+            }
+        });
+        map.addOverlay(mapOverlay);
+
+        mapCloser.onclick = function() {
+            mapOverlay.setPosition(undefined);
+            mapCloser.blur();
+            return false;
+        };
+
+        map.on('singleclick', function (event) {
+            let feature = map.getFeaturesAtPixel(event.pixel);
+            if (feature[0] !== undefined) {
+                let coordinate = feature[0].values_.geometry.flatCoordinates;
+
+                mapOverlay.setPosition(coordinate);
+            } else {
+                mapOverlay.setPosition(undefined);
+                mapCloser.blur();
+            }
+        });
+
+        let layer;
+        function addMarker(target, lat, long, dezoom = true) {
+            target.removeLayer(layer);
+            layer = new ol.layer.Vector({
+                source: new ol.source.Vector({
+                    features: [
+                        new ol.Feature({
+                            geometry: new ol.geom.Point(ol.proj.fromLonLat([long, lat]))
+                        })
+                    ]
+                })
+            });
+            target.addLayer(layer);
+
+            if (Math.floor(target.getView().getZoom()) === 1 || dezoom !== true) {
+                target.getView().animate({zoom: 15});
+                target.getView().animate({center: ol.proj.fromLonLat([long, lat])});
+            } else {
+                target.getView().animate({zoom: 1}, function() {
+                    target.getView().animate({zoom: 15});
+                    target.getView().animate({center: ol.proj.fromLonLat([long, lat])});
+                });
+            }
+            if (target === map) {
+                mapOverlay.setPosition(ol.proj.fromLonLat([long, lat]));
+            }
+        }
+
+        function resetView(target) {
+            target.removeLayer(layer);
+            if (Math.floor(target.getView().getZoom()) !== 1) {
+                target.getView().animate({zoom: 1});
+            }
+            target.getView().animate({center: [0, 0]});
+            mapOverlay.setPosition(undefined);
+            mapCloser.blur();
+        }
+
+        setTimeout(() => {
+            addMarker(map, {{ sortie.lieu.latitude }}, {{ sortie.lieu.longitude }});
+            mapContent.innerHTML = '{{ sortie.lieu.rue }}<br />' +
+                '{{ sortie.lieu.ville.__toString }}<br />' +
+                'Latitude : {{ sortie.lieu.latitude }}<br />' +
+                'Longitude : {{ sortie.lieu.longitude }}'
+            ;
+        }, 0);
+    </script>
 {% endblock %}

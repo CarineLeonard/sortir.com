@@ -135,14 +135,17 @@ class SortieController extends AbstractController
         $sortie = $sortieRepo -> find($id);
         $etatsSortieService = new EtatsSortieService($em);
         $etatsSortieService->updateEtat($sortie);
-        $sortie->getLieu()->getVille();
-        $sortie->getLieu();
 
-        $lieuRepo = $this->getDoctrine()->getRepository(Lieu::class) ;
-        $lieu = $lieuRepo -> find($sortie->getLieu()->getId());
+        $sortie->getLieu()->getVille();
+        $lieu = $sortie->getLieu();
 
         $lieuForm = $this->createForm(LieuType::class, $lieu);
-        $sortieForm = $this->createForm(SortieUpdateType::class, $sortie);
+        $sortieForm = $this->createForm(SortieType::class, $sortie);
+
+        $ville = new Ville();
+        $villeForm = $this->createForm(VilleType::class, $ville);
+
+        $sortieForm->get('ville')->setData($sortie->getLieu()->getVille());
 
         $publier = false;
         if ($request->request->has('publier'))
@@ -154,7 +157,6 @@ class SortieController extends AbstractController
             return $this->redirectToRoute('main_index', [
             ]);
         }
-
 
         $sortieForm->handleRequest($request);
 
@@ -188,11 +190,7 @@ class SortieController extends AbstractController
             ]);
         }
 
-
-        $ville = new Ville();
-        $villeForm = $this->createForm(VilleType::class, $ville);
-
-        return $this->render('sortie/modifier.html.twig', [
+        return $this->render('sortie/modifier2.html.twig', [
             'controller_name' => 'SortieController',
             'sortieForm' => $sortieForm->createView(),
             'lieuForm' => $lieuForm->createView(),

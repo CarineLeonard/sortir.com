@@ -1,0 +1,459 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sortir.com{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/css/ol.css" type="text/css">
+{% endblock %}
+{% block titre %}Modifier une sortie{% endblock %}
+
+{% block body %}
+    {{ form_start(sortieForm) }}
+    <div class="row">
+        <div class="col-6">
+            {{ form_row(sortieForm.nom) }}
+            {{ form_row(sortieForm.dateHeureDebut) }}
+            {{ form_row(sortieForm.dateLimiteInscription) }}
+            {{ form_row(sortieForm.nbInscriptionsMax) }}
+            {{ form_row(sortieForm.duree) }}
+            {{ form_row(sortieForm.infosSortie,{ 'attr': {'rows': '4'} }) }}
+        </div>
+        <div class="col-6">
+            <div class="form-group">
+                <label for="campus_div">Site organisateur</label>
+                <div id="campus_div" class="form-control-plaintext text-dark">{{ app.user.campus.nom }}</div>
+            </div>
+            {{ form_row(sortieForm.ville) }}
+            <div class="form-group">
+                {{ form_label(sortieForm.lieu) }}
+                <div class="form-row">
+                    <div class="col-10">
+                        {{ form_widget(sortieForm.lieu) }}
+                    </div>
+                    <div class="col-2">
+                        <button type="button" class="btn btn-primary m-0" data-toggle="modal" data-target="#lieuModal">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group d-none">
+                <label for="rue">Rue</label>
+                <div id="rue" class="form-control-plaintext text-dark">&nbsp;</div>
+            </div>
+            <div class="form-group d-none">
+                <label for="code_postal">Code postal</label>
+                <div id="code_postal" class="form-control-plaintext text-dark">&nbsp;</div>
+            </div>
+            <div class="form-group d-none">
+                <label for="latitude">Latitude</label>
+                <div id="latitude" class="form-control-plaintext text-dark">&nbsp;</div>
+            </div>
+            <div class="form-group d-none">
+                <label for="longitude">Longitude</label>
+                <div id="longitude" class="form-control-plaintext text-dark">&nbsp;</div>
+            </div>
+            <div id="map" style="width: 100%; height: 400px;">
+                <div id="map-popup" class="ol-popup">
+                    <div class="clearfix">
+                        <a href="#" id="map-popup-closer" class="ol-popup-closer"></a>
+                        <div id="map-popup-content"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <button type="submit" name="enregistrer" class="btn btn-primary">Enregistrer</button>
+        <button type="submit" name="publier" class="btn btn-primary">Publier la sortie</button>
+        <button type="submit" name="supprimer" class="btn btn-primary">Supprimer la sortie</button>
+        <button type="button" name="annuler" class="btn btn-primary bouton-annuler">Annuler</button>
+    </div>
+    {{ form_end(sortieForm) }}
+
+    <div class="modal fade" id="lieuModal" tabindex="-1" aria-labelledby="lieuModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="lieuModalLabel">Nouveau lieu</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div id="lieuForm">
+                    {% include 'lieu/nouveau.html.twig' %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/build/ol.js"></script>
+    <script type="text/javascript">
+        let map = new ol.Map({
+            controls: ol.control.defaults({attribution: false}).extend([
+                new ol.control.Attribution({
+                    collapsible: true,
+                    collapsed: true
+                })
+            ]),
+            target: 'map',
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                })
+            ],
+            view: new ol.View({
+                center: ol.proj.fromLonLat([0, 0]),
+                zoom: 1
+            })
+        });
+
+        let mapContainer = document.getElementById('map-popup');
+        let mapContent = document.getElementById('map-popup-content');
+        let mapCloser = document.getElementById('map-popup-closer');
+
+        let mapOverlay = new ol.Overlay({
+            element: mapContainer,
+            autoPan: true,
+            autoPanAnimation: {
+                duration: 250
+            }
+        });
+        map.addOverlay(mapOverlay);
+
+        mapCloser.onclick = function() {
+            mapOverlay.setPosition(undefined);
+            mapCloser.blur();
+            return false;
+        };
+
+        map.on('singleclick', function (event) {
+            let feature = map.getFeaturesAtPixel(event.pixel);
+            if (feature[0] !== undefined) {
+                let coordinate = feature[0].values_.geometry.flatCoordinates;
+
+                mapOverlay.setPosition(coordinate);
+            } else {
+                mapOverlay.setPosition(undefined);
+                mapCloser.blur();
+            }
+        });
+
+        let layer;
+        function addMarker(target, lat, long, dezoom = true) {
+            target.removeLayer(layer);
+            layer = new ol.layer.Vector({
+                source: new ol.source.Vector({
+                    features: [
+                        new ol.Feature({
+                            geometry: new ol.geom.Point(ol.proj.fromLonLat([long, lat]))
+                        })
+                    ]
+                })
+            });
+            target.addLayer(layer);
+
+            if (Math.floor(target.getView().getZoom()) === 1 || dezoom !== true) {
+                target.getView().animate({zoom: 15});
+                target.getView().animate({center: ol.proj.fromLonLat([long, lat])});
+            } else {
+                target.getView().animate({zoom: 1}, function() {
+                    target.getView().animate({zoom: 15});
+                    target.getView().animate({center: ol.proj.fromLonLat([long, lat])});
+                });
+            }
+            if (target === map) {
+                mapOverlay.setPosition(ol.proj.fromLonLat([long, lat]));
+            }
+        }
+
+        function resetView(target) {
+            target.removeLayer(layer);
+            if (Math.floor(target.getView().getZoom()) !== 1) {
+                target.getView().animate({zoom: 1});
+            }
+            target.getView().animate({center: [0, 0]});
+            mapOverlay.setPosition(undefined);
+            mapCloser.blur();
+        }
+
+        let formMap;
+
+        let formMapContainer;
+        let formMapContent;
+        let formMapCloser;
+        let formMapOverlay;
+        function loadFormMap() {
+            formMap = new ol.Map({
+                controls: ol.control.defaults({attribution: false}).extend([
+                    new ol.control.Attribution({
+                        collapsible: true,
+                        collapsed: true
+                    })
+                ]),
+                target: 'formMap',
+                layers: [
+                    new ol.layer.Tile({
+                        source: new ol.source.OSM()
+                    })
+                ],
+                view: new ol.View({
+                    center: ol.proj.fromLonLat([0, 0]),
+                    zoom: 1
+                })
+            });
+
+            formMapContainer = document.getElementById('formMap-popup');
+            formMapContent = document.getElementById('formMap-popup-content');
+            formMapCloser = document.getElementById('formMap-popup-closer');
+
+            formMapOverlay = new ol.Overlay({
+                element: formMapContainer,
+                autoPan: true,
+                autoPanAnimation: {
+                    duration: 250
+                }
+            });
+            formMap.addOverlay(formMapOverlay);
+
+            formMapCloser.onclick = function() {
+                formMapOverlay.setPosition(undefined);
+                formMapCloser.blur();
+                return false;
+            };
+
+            formMap.on('singleclick', function (event) {
+                let feature = formMap.getFeaturesAtPixel(event.pixel);
+                if (feature[0] !== undefined) {
+                    let coordinate = feature[0].values_.geometry.flatCoordinates;
+
+                    formMapOverlay.setPosition(coordinate);
+                } else {
+                    let longLat = ol.proj.toLonLat(event.coordinate);
+                    displayLocation(longLat[1], longLat[0]);
+                    addMarker(formMap, longLat[1], longLat[0], false);
+                    formMapOverlay.setPosition(event.coordinate);
+                }
+            })
+
+            let latitude = $('#lieu_latitude').val();
+            let longitude = $('#lieu_longitude').val();
+            if (latitude && longitude) {
+                displayLocation(latitude, longitude);
+                addMarker(formMap, latitude, longitude);
+                let coordinates = ol.proj.fromLonLat([longitude, latitude]);
+
+                setTimeout(() => {
+                    formMapOverlay.setPosition(coordinates);
+                }, 0);
+            }
+        }
+
+        $('#ville').toggle(false);
+
+        $('#lieuModal').on('shown.bs.modal', function () {
+            if (formMap === undefined) {
+                loadFormMap();
+            } else {
+                formMap.updateSize();
+            }
+        })
+
+        function displayLocation(latitude, longitude, zoom = 18) {
+            $.ajax({
+                url : 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat='+latitude+'&lon='+longitude+'&zoom='+zoom,
+                type: 'GET',
+                success: function(data) {
+                    if (data.address) {
+                        console.log(data.address)
+                        let address = data.address;
+                        let postcode = address.postcode ? address.postcode : '';
+                        let ville = (address.village || address.town || address.city || address.municipality || address.county);
+                        let rue = (address.house_number ? address.house_number + ', ' : '') + (address.road ? address.road : '')
+
+                        formMapContent.innerHTML = '';
+
+                        if (rue) {
+                            $('#lieu_rue').val(rue);
+                            formMapContent.innerHTML += 'Rue : ' + rue + '<br />';
+                        } else {
+                            $('#lieu_rue').val('');
+                        }
+
+                        let $lieuVilleFormGroup = $lieuVille.parent();
+                        if (ville && postcode) {
+                            let villePostCode = ville+' (' + postcode + ')';
+
+                            let villeOption = $('#lieu_ville option:contains("'+villePostCode+'")');
+                            if (villeOption.val() !== undefined) {
+                                villeOption.prop('selected', true);
+                                $lieuVilleFormGroup.toggle(false);
+                                $('#ville').toggle(false);
+                            } else {
+                                $lieuVilleFormGroup.toggle(false);
+                                $lieuVille.prop('selectedIndex', 0);
+                                $('#ville').toggle(true);
+                                $('#ville_nom').val(ville);
+                                $('#ville_codePostal').val(postcode);
+                            }
+
+                            formMapContent.innerHTML += 'Ville : ' + villePostCode + '<br />';
+                        } else {
+                            $lieuVilleFormGroup.toggle(false);
+                            $lieuVille.prop('selectedIndex', 0);
+                            $('#ville').toggle(true);
+                            $('#ville_nom').val(ville);
+                            $('#ville_codePostal').val(postcode);
+                        }
+
+                        $('#lieu_latitude').val(latitude);
+                        $('#lieu_longitude').val(longitude);
+                        formMapContent.innerHTML += 'Latitude : ' + latitude + "<br />" + 'Longitude : ' + longitude;
+                    }
+                }
+            });
+        }
+    </script>
+    <script src="{{ asset('bundles/fosjsrouting/js/router.min.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
+    <script>
+        let $ville = $('#sortie_ville');
+        let $lieuVille = $('#lieu_ville');
+        let $lieu = $('#sortie_lieu');
+        let $lieuModal = $('#lieuModal');
+        let $lieuForm = $('#lieuForm');
+        let $nouveauLieuSubmit = $('#submit_lieu');
+
+        $nouveauLieuSubmit.on('click', submitLieuForm);
+
+        $lieuVille.prop('selectedIndex', $ville.prop('selectedIndex'));
+
+        $lieuVille.change(function() {
+            $ville.val($lieuVille.val());
+        });
+
+        $ville.change(function() {
+            let value = $ville.val();
+            if (value !== undefined && value !== '') {
+                $lieuVille.val(value);
+                let $url = Routing.generate('api_ville_get_lieu', {id: value});
+                $.ajax({
+                    url : $url,
+                    type: 'GET',
+                    success: function(data) {
+                        if (data.length > 0) {
+                            $lieu.prop('disabled', false);
+                            $lieu.html('<option value="">Sélectionnez un lieu</option>');
+                            for (let lieu in data) {
+                                $lieu.append('<option value="'+ data[lieu].id +'">'+ data[lieu].nom +'</option>')
+                            }
+                        } else {
+                            $lieu.html('<option value="">Aucun lieu</option>');
+                            $lieu.prop('disabled', true);
+                        }
+                    }
+                });
+            } else {
+                $lieu.html('<option value="">Aucun lieu</option>');
+                $lieu.prop('disabled', true);
+            }
+            $lieu.val('');
+            $lieu.change();
+        });
+
+        $lieu.change(function() {
+            let value = $lieu.val();
+            if (value !== undefined && value !== '') {
+                let $url = Routing.generate('api_lieu_get', {id: $lieu.val()});
+                $.ajax({
+                    url: $url,
+                    type: 'GET',
+                    success: function (response) {
+                        if (response.status === 'OK') {
+                            $('#rue').html(response.data.rue);
+                            $('#code_postal').html(response.data.ville.codePostal);
+                            $('#latitude').html(response.data.latitude);
+                            $('#longitude').html(response.data.longitude);
+                            addMarker(map, response.data.latitude, response.data.longitude);
+                            mapContent.innerHTML = response.data.rue +'<br />' +
+                                                   response.data.ville.nom + ' ('+response.data.ville.codePostal +')<br />' +
+                                                   'Latitude : ' + response.data.latitude +'<br />' +
+                                                   'Longitude : ' + response.data.longitude
+                            ;
+                        } else {
+                            $('#rue').html('&nbsp;');
+                            $('#code_postal').html('&nbsp;');
+                            $('#latitude').html('&nbsp;');
+                            $('#longitude').html('&nbsp;');
+                            resetView(map);
+                        }
+                    },
+                    error: function () {
+                        $('#rue').html('&nbsp;');
+                        $('#code_postal').html('&nbsp;');
+                        $('#latitude').html('&nbsp;');
+                        $('#longitude').html('&nbsp;');
+                        resetView(map);
+                    }
+                });
+            } else {
+                $('#rue').html('&nbsp;');
+                $('#code_postal').html('&nbsp;');
+                $('#latitude').html('&nbsp;');
+                $('#longitude').html('&nbsp;');
+                resetView(map);
+            }
+        });
+
+        function submitLieuForm() {
+            $ville.val($lieuVille.val());
+            let $url = Routing.generate('api_lieu_nouveau', {});
+            let data = {};
+            data['nom'] = $('#lieu_nom').val();
+            data['rue'] = $('#lieu_rue').val();
+            data['latitude'] = $('#lieu_latitude').val();
+            data['longitude'] = $('#lieu_longitude').val();
+            data['ville'] = $('#lieu_ville').val();
+            data['_token'] = $(`#lieu__token`).val();
+            data['ville_nom'] = $('#ville_nom').val();
+            data['ville_codePostal'] = $('#ville_codePostal').val();
+            data['ville__token'] = $('#ville__token').val();
+            $.ajax({
+                url : $url,
+                type: 'POST',
+                data: JSON.stringify(data),
+                success: function(response) {
+                    console.log(response)
+                    $lieuForm.html(response.data.form);
+
+                    $lieuVille = $('#lieu_ville');
+                    $lieuVille.change(function() {
+                        $ville.val($lieuVille.val());
+                    });
+                    $nouveauLieuSubmit = $('#submit_lieu');
+                    $nouveauLieuSubmit.on('click', submitLieuForm);
+
+                    loadFormMap();
+
+                    if (response.status === 'OK') {
+                        let $options = $("#lieu_ville > option").clone();
+                        $("#sortie_ville > option").remove();
+                        $ville.append($options);
+
+                        $lieuModal.modal('toggle');
+                        $lieu.prop('disabled', false);
+                        $lieu.append('<option value="'+response.data.lieu.id+'">'+response.data.lieu.nom+'</option>');
+                        $('#sortie_lieu option[value="' + response.data.lieu.id + '"]').prop('selected', true);
+                        $lieu.change();
+                        $('#lieu_nom').val('');
+                        $('#lieu_rue').val('');
+                        $('#lieu_latitude').val('');
+                        $('#lieu_longitude').val('');
+                    }
+                }
+            });
+        }
+        $lieu.change();
+    </script>
+{% endblock %}
