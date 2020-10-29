@@ -30,8 +30,10 @@ final class Version20201028081518 extends AbstractMigration
         $this->addSql('INSERT INTO etat (libelle) VALUES ("passée")');
         $this->addSql('INSERT INTO etat (libelle) VALUES ("annulée")');
         $this->addSql('INSERT INTO etat (libelle) VALUES ("historisée")');
-        //$this->addSql('INSERT INTO campus (nom) VALUES ("Nantes Faraday")');
-        //$this->addSql('INSERT INTO participant (nom, prenom, telephone, mail, mot_passe, administrateur, actif, pseudo, id_campus) VALUES ("admin", "admin", "0612345678", "admin@campus-eni.fr", "$2y$13$.MRVppZJ2dZmwl4eoXMo1.27KUGt3I69G2TuwH8rlZIdkq/4hTsfO",1, 1, "admin", "1")');
+        $this->addSql('INSERT INTO campus (nom) VALUES ("Nantes Faraday")');
+        $this->addSql('INSERT INTO participant (nom, prenom, telephone, mail, mot_passe, administrateur, actif, pseudo, id_campus) 
+                VALUES ("admin", "admin", "0612345678", "admin@campus-eni.fr", "$2y$13$OUsyrZL2tOa7DkNd9YSMpufHbspy8XkFJq1ywa3rFoMAKrOaR9z5O",
+                1, 1, "admin", (SELECT id_campus FROM campus WHERE nom like "Nantes Faraday"))');
     }
 
     public function down(Schema $schema) : void
