@@ -8,7 +8,7 @@ h1 {
 }
 
 .centre {
-    margin-top: 10%;
+    margin-top: calc(calc(100vh - 500px)/2);
 }
 
 .btn {
@@ -24,7 +24,7 @@ h1 {
 
 .scrollable {
     /* défini la taille du conteneur par rapport à la hauteur de la fenêtre moins les marges verticales du body */
-    max-height: calc(100vh - 118px);
+    height: calc(100vh - 118px);
     /* compense la largeur de la scroll bar pour que le contenu reste centré
     (container a par défaut 15px de padding, j'ajoute les 10px de la scrollbar) */
     padding-left: calc(15px + 10px);
