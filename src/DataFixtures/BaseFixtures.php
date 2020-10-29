@@ -17,7 +17,7 @@ class BaseFixtures extends Fixture
     private $libellesCampus = [
         'Quimper',
         'Rennes',
-        'Nantes Faraday',
+        //'Nantes Faraday',
         'Niort',
         'Laval',
         'Mans',
@@ -25,15 +25,15 @@ class BaseFixtures extends Fixture
         'La Roche-sur-Yon'
     ];
 
-    private $libellesEtats = [
-        'créée',
-        'ouverte',
-        'clôturée',
-        'en cours',
-        'passée',
-        'annulée',
-        'historisée'
-    ];
+//    private $libellesEtats = [
+//        'créée',
+//        'ouverte',
+//        'clôturée',
+//        'en cours',
+//        'passée',
+//        'annulée',
+//        'historisée'
+//    ];
 
     private $encoder;
 
@@ -57,14 +57,14 @@ class BaseFixtures extends Fixture
         $manager->flush();
         $this->addReference(self::CAMPUS_REFERENCE, $userCampus);
 
-        //Etats
-        foreach ($this->libellesEtats as $libelle)
-        {
-            $etat = new Etat();
-            $etat->setLibelle($libelle);
-            $manager->persist($etat);
-        }
-        $manager->flush();
+//        //Etats - dans migrations
+//        foreach ($this->libellesEtats as $libelle)
+//        {
+//            $etat = new Etat();
+//            $etat->setLibelle($libelle);
+//            $manager->persist($etat);
+//        }
+//        $manager->flush();
 
 
         //Participants
@@ -73,7 +73,7 @@ class BaseFixtures extends Fixture
         $participant->setNom('user');
         $participant->setPrenom('name');
         $participant->setTelephone('0654321987');
-        $participant->setMail('user@mail.com');
+        $participant->setMail('user@campus-eni.fr');
         $participant->setMotPasse($this->encoder->encodePassword($participant,'Passw0rd'));
         $participant->setAdministrateur(false);
         $participant->setActif(true);
@@ -82,19 +82,19 @@ class BaseFixtures extends Fixture
         $participant->setImageFilename('uploads/images/profilDefault.jpg');
         $manager->persist($participant);
 
-        //admin
-        $participant = new Participant();
-        $participant->setNom('admin');
-        $participant->setPrenom('name');
-        $participant->setTelephone('0654321987');
-        $participant->setMail('admin@mail.com');
-        $participant->setMotPasse($this->encoder->encodePassword($participant,'Passw0rd'));
-        $participant->setAdministrateur(true);
-        $participant->setActif(true);
-        $participant->setCampus($userCampus);
-        $participant-> setPseudo('admin');
-        $participant->setImageFilename('profilDefault.jpg');
-        $manager->persist($participant);
+        //admin : dans migrations
+//        $participant = new Participant();
+//        $participant->setNom('admin');
+//        $participant->setPrenom('name');
+//        $participant->setTelephone('0654321987');
+//        $participant->setMail('admin@mail.com');
+//        $participant->setMotPasse($this->encoder->encodePassword($participant,'Passw0rd'));
+//        $participant->setAdministrateur(true);
+//        $participant->setActif(true);
+//        $participant->setCampus($userCampus);
+//        $participant-> setPseudo('admin');
+//        $participant->setImageFilename('profilDefault.jpg');
+//        $manager->persist($participant);
 
         $manager->flush();
     }
