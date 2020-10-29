@@ -34,6 +34,43 @@ class EtatsSortieService
 
         if ($sortie->getEtat() == 'clôturée'
             && $sortie->getParticipants()->count() < $sortie->getNbinscriptionsMax()
+            && $sortie->getDateLimiteInscription() > $now)
+        {
+            $sortie->setEtat($this->etats['ouverte']);
+        }
+        elseif ($sortie->getDateLimiteInscription() <= $now
+            || $sortie->getParticipants()->count() >= $sortie->getNbinscriptionsMax())
+        {
+            $sortie->setEtat($this->etats['clôturée']);
+        }
+        elseif ($sortie->getDateHeureDebut() <= $now)
+        {
+            $sortie->setEtat($this->etats['en cours']);
+        }
+        elseif ($sortie->getDateHeureDebut() <= $now->modify('-'.$sortie->getDuree().' minutes'))
+        {
+            $sortie->setEtat($this->etats['passée']);
+        }
+        elseif ($sortie->getDateHeureDebut() <= $now->modify('-1 month'))
+        {
+            $sortie->setEtat($this->etats['historisée']);
+        }
+
+        $this->em->persist($sortie);
+        $this->em->flush();
+    }
+
+    public function updateEtatWithoutPersist(Sortie $sortie)
+    {
+        if ($sortie->getEtat() == 'annulée' || $sortie->getEtat() == 'créée')
+        {
+            return;
+        }
+
+        $now = new \DateTime();
+
+        if ($sortie->getEtat() == 'clôturée'
+            && $sortie->getParticipants()->count() < $sortie->getNbinscriptionsMax()
             && $sortie->getDateLimiteInscription() < $now)
         {
             $sortie->setEtat($this->etats['ouverte']);
@@ -55,8 +92,5 @@ class EtatsSortieService
         {
             $sortie->setEtat($this->etats['historisée']);
         }
-
-        $this->em->persist($sortie);
-        $this->em->flush();
     }
 }
