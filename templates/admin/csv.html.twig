@@ -1,7 +1,7 @@
 {% extends '@!EasyAdmin/page/content.html.twig' %}
 {% form_theme CsvForm 'form/bootstrap_4_horizontal_layout.html.twig' %}
 
-{% block title %}EasyAdmin | Upload file{% endblock %}
+{% block page_title %}EasyAdmin | Upload file{% endblock %}
 
 {% block main %}
 <p>Pour le csv</p>
@@ -11,3 +11,14 @@
         <button type="button" name="annuler" class="btn btn-primary bouton-annuler">Annuler</button>
     {{ form_end(CsvForm) }}
 {% endblock %}
+
+
+{% block body_javascript %}
+    parent()
+    <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            bsCustomFileInput.init()
+        })
+    </script>
+{% endblock body_javascript %}
